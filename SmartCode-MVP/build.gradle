@@ -1,5 +1,5 @@
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.TheGuarder'
+//apply plugin: 'com.github.dcendents.android-maven'
+//group = 'com.github.TheGuarder'
 
 configurations.maybeCreate("default")
 artifacts.add("default", file('MVPArms-3.0.2.aar'))
