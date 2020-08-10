@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <ImageView
+        android:id="@+id/ivEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/public_ic_empty" />
+
+    <TextView
+        android:id="@+id/tvEmptyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/public_pt_8"
+        android:gravity="center"
+        android:lineSpacingExtra="@dimen/public_pt_3"
+        android:textColor="@color/public_color_ADADAD"
+        android:textSize="@dimen/public_font_14pt" />
+</merge>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="imageloader_view_tag" type="id" />
+    <item name="public_imv_icon" type="id" />
+    <item name="public_imv_txt" type="id" />
+    <item name="public_imv_unread" type="id" />
+    <item name="public_title_right" type="id" />
+</resources>

@@ -1,0 +1,141 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="public_AppTheme" parent="QMUI.Compat.NoActionBar">
+        <!-- colorPrimary 应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色-->
+        <item name="colorPrimary">@color/public_colorPrimary</item>
+        <!-- colorPrimaryDark 应用的主要暗色调，statusBarColor默认使用该颜色-->
+        <item name="colorPrimaryDark">@color/public_colorPrimaryDark</item>
+        <!-- colorAccent   CheckBox，RadioButton，SwitchCompat等一般控件的选中效果默认采用该颜色-->
+        <item name="colorAccent">@color/public_colorAccent</item>
+
+        <item name="android:windowBackground">@color/public_background</item>
+
+        <item name="actionBarSize">@dimen/public_title_bar_height</item>
+
+        <item name="android:windowAnimationStyle">@style/public_Activity_Animation</item>
+        <item name="QMUITopBarStyle">@style/public_TopBar</item>
+        <item name="android:textViewStyle">@style/public_TextViewStyle</item>
+
+        <item name="qmui_tab_sign_count_view">@style/public_tab_sign_count_view</item>
+        <item name="qmui_tab_sign_count_view_minSize">@dimen/qmui_tab_sign_count_view_minSize</item>
+        <item name="qmui_tab_sign_count_view_minSize_with_text">
+            @dimen/qmui_tab_sign_count_view_minSize_with_text
+        </item>
+        <item name="qmui_tab_sign_count_view_bg">@drawable/public_sign_count_view_bg</item>
+        <item name="qmui_tab_sign_count_view_padding_horizontal">@dimen/public_pt_4</item>
+
+        <item name="qmui_round_btn_text_size">@dimen/public_font_16pt</item>
+        <item name="qmui_round_btn_bg_color">@color/public_color_0F7FD6</item>
+        <item name="qmui_round_btn_border_width">@dimen/public_pt_0</item>
+        <item name="qmui_round_btn_border_color">@color/public_color_transparent</item>
+        <item name="qmui_round_btn_text_color">@color/public_white</item>
+
+        <item name="qmui_topbar_height">@dimen/public_title_bar_height</item>
+    </style>
+
+    <style name="public_AppTheme.Transparent" parent="public_AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="public_AppTheme.FullScreen" parent="public_AppTheme">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="public_AppTheme.FullScreen.Transparent" parent="public_AppTheme.FullScreen">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="public_AppTheme.NoWindowBackground" parent="public_AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="public_DialogTheme" parent="public_AppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/public_color_66000000</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="public_TopBar">
+        <item name="qmui_topbar_title_text_size">@dimen/public_font_18pt</item>
+        <item name="qmui_topbar_text_btn_text_size">@dimen/public_font_14pt</item>
+        <item name="qmui_topbar_title_color">@color/public_white</item>
+        <item name="qmui_topbar_subtitle_color">@color/public_white</item>
+        <item name="qmui_topbar_text_btn_color_state_list">@color/public_white</item>
+        <item name="qmui_topbar_height">@dimen/public_title_bar_height</item>
+        <item name="qmui_topbar_image_btn_height">@dimen/public_title_bar_height</item>
+        <item name="qmui_topbar_image_btn_width">@dimen/public_title_bar_height</item>
+        <item name="qmui_topbar_need_separator">true</item>
+        <item name="qmui_topbar_left_back_drawable_id">@drawable/public_left_back_white</item>
+        <item name="qmui_topbar_bg_color">@color/public_colorPrimary</item>
+        <item name="qmui_topbar_separator_color">@color/public_colorPrimary</item>
+        <item name="qmui_topbar_separator_height">@dimen/public_pt_0</item>
+    </style>
+
+    <style name="public_Activity_Animation">
+        <item name="android:activityOpenEnterAnimation">@anim/public_translate_right_to_center
+        </item>
+        <item name="android:activityOpenExitAnimation">@anim/public_translate_center_to_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/public_translate_left_to_center
+        </item>
+        <item name="android:activityCloseExitAnimation">@anim/public_translate_center_to_right
+        </item>
+    </style>
+
+    <style name="public_tab_sign_count_view">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">?attr/qmui_tab_sign_count_view_minSize</item>
+        <item name="android:background">?attr/qmui_tab_sign_count_view_bg</item>
+        <item name="android:textSize">@dimen/public_pt_10</item>
+        <item name="android:textColor">@color/public_white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:paddingLeft">?attr/qmui_tab_sign_count_view_padding_horizontal</item>
+        <item name="android:paddingRight">?attr/qmui_tab_sign_count_view_padding_horizontal</item>
+        <item name="android:minWidth">?attr/qmui_tab_sign_count_view_minSize</item>
+        <item name="android:minHeight">?attr/qmui_tab_sign_count_view_minSize</item>
+    </style>
+
+    <style name="public_TextViewStyle" parent="TextView.Compat">
+        <item name="android:hyphenationFrequency" tools:ignore="NewApi">none</item>
+    </style>
+
+    <style name="public_dialog_progress" parent="android:style/Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <!--是否模糊-->
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="public_dialog_anim_bottom" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/public_dialog_bottom_in</item>
+        <item name="android:windowExitAnimation">@anim/public_dialog_bottom_out</item>
+    </style>
+
+    <style name="public_alert" parent="android:style/Theme.DeviceDefault.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="public_span_text_start">
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textSize">@dimen/public_font_6pt</item>
+    </style>
+
+    <style name="SCTheme" parent="public_AppTheme">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleSize">@dimen/public_title_bar_height</item>
+        <item name="android:windowTitleBackgroundStyle">@null</item>
+        <item name="android:textSize">@dimen/public_font_14pt</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+</resources>

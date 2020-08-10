@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <declare-styleable name="IconMenuView" tools:ignore="ResourceName">
+        <attr name="imv_icon" format="reference" />
+        <attr name="imv_iconWidth" format="dimension" />
+        <attr name="imv_iconHeight" format="dimension" />
+        <attr name="imv_space" format="dimension" />
+        <attr name="imv_txt" format="string" />
+        <attr name="imv_txtSize" format="integer" />
+        <attr name="imv_txtColor" format="color" />
+        <attr name="imv_txtShadowType" format="enum">
+            <enum name="Def" value="0" />
+            <enum name="FM_Menu" value="1" />
+        </attr>
+        <attr name="imv_unreadCount" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="PlayActionView" tools:ignore="ResourceName">
+        <attr name="pav_startRes" format="reference" />
+        <attr name="pav_loadingRes" format="reference" />
+        <attr name="pav_pauseRes" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="ContentEditView">
+        <attr name="cev_title" format="string" />
+        <attr name="cev_titleColor" format="color" />
+        <attr name="cev_titleSize" format="integer" />
+        <attr name="cev_titleGravity" format="enum">
+            <enum name="START" value="0" />
+            <enum name="START_CENTER" value="1" />
+            <enum name="START_BOTTOM" value="2" />
+            <enum name="CENTER" value="3" />
+            <enum name="CENTER_TOP" value="4" />
+            <enum name="CENTER_BOTTOM" value="5" />
+            <enum name="END" value="6" />
+            <enum name="END_CENTER" value="7" />
+            <enum name="END_BOTTOM" value="8" />
+        </attr>
+        <attr name="cev_titleWidth" format="integer" />
+        <attr name="cev_titleIcon" format="reference" />
+        <attr name="cev_titleIconSpace" format="integer" />
+        <attr name="cev_space" format="integer" />
+        <attr name="cev_content" format="string" />
+        <attr name="cev_contentColor" format="color" />
+        <attr name="cev_contentSize" format="integer" />
+        <attr name="cev_contentGravity" format="enum">
+            <enum name="START" value="0" />
+            <enum name="START_CENTER" value="1" />
+            <enum name="START_BOTTOM" value="2" />
+            <enum name="CENTER" value="3" />
+            <enum name="CENTER_TOP" value="4" />
+            <enum name="CENTER_BOTTOM" value="5" />
+            <enum name="END" value="6" />
+            <enum name="END_CENTER" value="7" />
+            <enum name="END_BOTTOM" value="8" />
+        </attr>
+        <attr name="cev_contentIcon" format="reference" />
+        <attr name="cev_contentIconSpace" format="integer" />
+        <attr name="cev_contentHint" format="string" />
+        <attr name="cev_contentHintColor" format="color" />
+        <attr name="cev_contentMaxLine" format="integer" />
+        <attr name="cev_contentMaxLength" format="integer" />
+        <attr name="cev_contentAutoLayout" format="boolean" />
+        <attr name="cev_contentType" format="enum">
+            <enum name="NONE" value="0" />
+            <enum name="EDIT_TXT" value="1" />
+            <enum name="EDIT_INT" value="2" />
+            <enum name="EDIT_DOUBLE" value="3" />
+        </attr>
+    </declare-styleable>
+
+</resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.widget.roundwidget.QMUIRoundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/public_pt_23"
+    android:paddingTop="@dimen/public_pt_12"
+    android:paddingEnd="@dimen/public_pt_23"
+    android:paddingBottom="@dimen/public_pt_12"
+    app:qmui_backgroundColor="@color/public_color_CC000000"
+    app:qmui_radius="@dimen/public_pt_8">
+
+    <ImageView
+        android:id="@+id/loadingAnim"
+        android:layout_width="@dimen/public_pt_36"
+        android:layout_height="@dimen/public_pt_36"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/public_loading"
+        android:scaleType="fitCenter"
+        android:src="@drawable/public_loading_anim_ic" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/public_pt_10"
+        android:text="@string/public_loading"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/public_font_14pt" />
+
+</com.qmuiteam.qmui.widget.roundwidget.QMUIRoundLinearLayout>

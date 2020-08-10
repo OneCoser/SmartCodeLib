@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.widget.roundwidget.QMUIRoundRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:qmui_backgroundColor="@android:color/white"
+    app:qmui_borderWidth="@dimen/public_pt_0"
+    app:qmui_radius="@dimen/public_pt_8">
+
+    <ch.smart.code.view.span.SpanTextView
+        android:id="@+id/alert_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/public_pt_12"
+        android:layout_marginTop="@dimen/public_pt_20"
+        android:layout_marginEnd="@dimen/public_pt_12"
+        android:gravity="center"
+        android:textColor="@color/public_color_333333"
+        android:textSize="@dimen/public_font_16pt"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/alert_msg_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/alert_title"
+        android:layout_marginStart="@dimen/public_pt_12"
+        android:layout_marginTop="@dimen/public_pt_20"
+        android:layout_marginEnd="@dimen/public_pt_12"
+        android:layout_marginBottom="@dimen/public_pt_24"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/alert_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/public_color_333333"
+            android:textSize="@dimen/public_font_16pt"
+            tool:text="弹框消息" />
+
+        <TextView
+            android:id="@+id/alert_msg_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/public_pt_16"
+            android:textColor="@color/public_color_999999"
+            android:textSize="@dimen/public_font_14pt"
+            android:visibility="gone"
+            tool:text="弹框消息附加提示" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/alert_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/public_line"
+        android:layout_below="@id/alert_msg_lay"
+        android:layout_marginTop="@dimen/public_pt_4"
+        android:background="@color/public_color_E5E5E5" />
+
+    <View
+        android:id="@+id/alert_space"
+        android:layout_width="@dimen/public_line"
+        android:layout_height="@dimen/public_pt_44"
+        android:layout_below="@id/alert_line"
+        android:layout_centerHorizontal="true"
+        android:background="@color/public_color_E5E5E5" />
+
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/alert_left_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/alert_space"
+        android:layout_alignBottom="@id/alert_space"
+        android:layout_toStartOf="@id/alert_space"
+        android:gravity="center"
+        android:text="@string/public_cancel"
+        android:textColor="@color/public_color_333333"
+        android:textSize="@dimen/public_font_16pt"
+        app:qmui_backgroundColor="@android:color/white"
+        app:qmui_borderWidth="@dimen/public_pt_0"
+        app:qmui_radiusBottomLeft="@dimen/public_pt_8" />
+
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/alert_right_button"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/alert_space"
+        android:layout_alignBottom="@id/alert_space"
+        android:layout_toEndOf="@id/alert_space"
+        android:gravity="center"
+        android:text="@string/public_submit"
+        android:textColor="@color/public_color_FF9500"
+        android:textSize="@dimen/public_font_16pt"
+        app:qmui_backgroundColor="@color/public_color_FFFFFF"
+        app:qmui_borderWidth="@dimen/public_pt_0"
+        app:qmui_radiusBottomRight="@dimen/public_pt_8" />
+
+    <LinearLayout
+        android:id="@+id/alert_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/alert_msg"
+        android:layout_alignBottom="@id/alert_space"
+        android:background="#eeffffff"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/alert_loading_view"
+            style="?android:attr/progressBarStyleSmallTitle"
+            android:layout_width="@dimen/public_pt_48"
+            android:layout_height="@dimen/public_pt_48"
+            android:indeterminateDrawable="@drawable/public_loading_progressbar" />
+
+        <TextView
+            android:id="@+id/alert_loading_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/public_pt_5"
+            android:gravity="center"
+            android:text="@string/public_loading"
+            android:textColor="@color/public_color_F5A30E"
+            android:textSize="@dimen/public_font_12pt" />
+
+    </LinearLayout>
+
+</com.qmuiteam.qmui.widget.roundwidget.QMUIRoundRelativeLayout>

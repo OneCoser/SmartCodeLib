@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <ProgressBar
+        android:id="@+id/publicProgressbar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:progressDrawable="@color/public_color_F5A30E" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/public_loading"
+        android:textColor="@color/public_color_ADADAD"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/publicProgressbar"
+        app:layout_constraintStart_toStartOf="@+id/publicProgressbar"
+        app:layout_constraintTop_toBottomOf="@+id/publicProgressbar" />
+
+</merge>

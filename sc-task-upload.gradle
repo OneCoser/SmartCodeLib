@@ -1,0 +1,114 @@
+import groovy.json.JsonSlurper
+
+private def uploadPGY(String filePath, String buildChannelShortcut) {
+    println "uploadPGY filePath：" + filePath
+
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        executable = 'curl'
+        args = ['-F', "file=@${filePath}", '-F', "_api_key=${rootProject.ext.pgy["apiKey"]}", '-F', 'buildInstallType=2', '-F', "buildPassword=${rootProject.ext.pgy["downloadPassword"]}", '-F', "buildChannelShortcut=${buildChannelShortcut}", rootProject.ext.pgy["uploadUrl"]]
+        standardOutput = stdout
+    }
+    String output = stdout.toString()
+    println output
+    def dataJson = new JsonSlurper().parseText(output)
+    println dataJson.data.buildQRCodeURL
+    println "buildVersion: " + dataJson.data.buildVersion
+    println "buildVersionNo: " + dataJson.data.buildVersionNo
+}
+
+private def uploadFIR(String filePath) {
+    println "uploadFIR filePath：" + filePath
+
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        executable = 'curl'
+        args = ['-X', 'POST', rootProject.ext.fir["uploadUrl"],
+                '-H', 'Content-Type: application/json',
+                '-d', "{\"type\":\"android\", \"bundle_id\":\"${rootProject.ext.android["appId"]}\", \"api_token\":\"${rootProject.ext.fir["apiKey"]}\"}"
+        ]
+        standardOutput = stdout
+    }
+    String output = stdout.toString()
+    println output
+    def dataJson = new JsonSlurper().parseText(output)
+
+    uploadFIRFile("${projectDir.absolutePath}/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+            dataJson.cert.icon.key, dataJson.cert.icon.token, dataJson.cert.icon.upload_url)
+
+    uploadFIRFile(filePath, dataJson.cert.binary.key, dataJson.cert.binary.token, dataJson.cert.binary.upload_url)
+}
+
+private def uploadFIRFile(String filePath, String key, String token, String uploadUrl) {
+    println "uploadFIRFile filePath：" + filePath
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        executable = 'curl'
+        args = ['-F', "file=@${filePath}", '-F', "key=${key}", '-F', "token=${token}",
+                '-F', "x:changelog=${rootProject.ext.fir["uploadLog"]}", '-F', "x:name=${rootProject.ext.android["appName"]}",
+                '-F', "x:version=${rootProject.ext.android["versionName"]}", '-F', "x:build=${rootProject.ext.android["versionCode"]}",
+                uploadUrl
+        ]
+        standardOutput = stdout
+    }
+    println stdout.toString()
+}
+
+private def getApkFile(String fileDir) {
+    def dir = file(fileDir)
+    if (!dir.exists()) {
+        println "dir not exists：" + dir.path
+        return null
+    }
+    File[] files = dir.listFiles(new FileFilter() {
+        @Override
+        boolean accept(File file) {
+            return file.isFile() && file.name.endsWith(".apk")
+        }
+    })
+    if (files == null || files.size() == 0) {
+        println "files == null ||  files.size() == 0"
+        return null
+    }
+    return files[0]
+}
+
+/**
+ * 执行 “uploadDevApk” 命令自动打包测试环境包，并上传到蒲公英
+ */
+task uploadDevApk(dependsOn: 'releaseDevApk') {
+    group = "publish"
+
+    doLast {
+        def apkFile = getApkFile(rootProject.ext.jiagu["devOutputPath"])
+        if (apkFile != null) {
+            uploadPGY(apkFile.absolutePath, "")
+//            uploadFIR(apkFile.absolutePath)
+        }
+    }
+}
+
+
+/**
+ * 执行 “uploadProductionApk” 命令自动打包生成线上内测环境包，并上传到蒲公英
+ */
+task uploadProductionApk(dependsOn: 'releaseProductionApk') {
+    group = "publish"
+
+    doLast {
+        def apkFile = getApkFile(rootProject.ext.jiagu["productionOutputPath"])
+        if (apkFile != null) {
+            uploadPGY(apkFile.absolutePath, "")
+//            uploadFIR(apkFile.absolutePath)
+        }
+    }
+}
+
+//task uploadFirApk() {
+//    group = "publish"
+//
+//    def apkFile = getApkFile("${projectDir.absolutePath}/build/outputs/apk/dev/debug/")
+//    if (apkFile != null) {
+//        uploadFIR(apkFile.absolutePath)
+//    }
+//}

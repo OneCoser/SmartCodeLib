@@ -1,0 +1,17 @@
+<resources>
+
+    <style name="AppTheme" parent="SCTheme">
+        <!-- colorPrimary 应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色-->
+        <item name="colorPrimary">@color/main</item>
+        <!-- colorPrimaryDark 应用的主要暗色调，statusBarColor默认使用该颜色-->
+        <item name="colorPrimaryDark">@color/main</item>
+        <!-- colorAccent   CheckBox，RadioButton，SwitchCompat等一般控件的选中效果默认采用该颜色-->
+        <item name="colorAccent">@color/main</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="Startup" parent="AppTheme">
+        <item name="android:windowBackground">@color/main</item>
+    </style>
+
+</resources>

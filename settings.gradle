@@ -1,0 +1,3 @@
+include ':SmartCode'
+include ':app'
+rootProject.name = "SmartCodeLib"

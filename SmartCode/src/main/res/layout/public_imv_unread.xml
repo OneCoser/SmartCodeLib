@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/public_imv_unread"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/public_pt_10"
+    android:gravity="center"
+    android:minWidth="@dimen/public_pt_15"
+    android:paddingStart="@dimen/public_pt_3"
+    android:paddingEnd="@dimen/public_pt_3"
+    android:textColor="@android:color/white"
+    android:textSize="@dimen/public_font_8pt"
+    app:qmui_radius="@dimen/public_pt_5"
+    app:qmui_backgroundColor="@color/public_color_FA4824"
+    tools:text="0" />

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qmuiteam.qmui.widget.roundwidget.QMUIRoundLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/public_pt_9"
+    android:paddingTop="@dimen/public_pt_12"
+    android:paddingEnd="@dimen/public_pt_9"
+    android:paddingBottom="@dimen/public_pt_12"
+    app:qmui_backgroundColor="@color/public_color_CC000000"
+    app:qmui_borderWidth="@dimen/public_pt_0"
+    app:qmui_radius="@dimen/public_pt_8">
+
+    <ImageView
+        android:id="@+id/public_toast_icon"
+        android:layout_width="@dimen/public_pt_36"
+        android:layout_height="@dimen/public_pt_36"
+        android:layout_marginBottom="@dimen/public_pt_10"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitCenter"
+        android:src="@drawable/public_toast_icon_success"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/public_toast_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:gravity="center"
+        android:maxWidth="@dimen/public_pt_220"
+        android:minWidth="@dimen/public_pt_70"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/public_font_14pt"
+        tools:text="恭喜你" />
+
+</com.qmuiteam.qmui.widget.roundwidget.QMUIRoundLinearLayout>

@@ -1,0 +1,131 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.alibaba.arouter'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+
+    defaultConfig {
+        applicationId rootProject.ext.android["appId"]
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+        resValue("string", "appName", rootProject.ext.android["appName"])
+
+        buildConfigField("String", "PGY_API_KEY", "\"${rootProject.ext.pgy["apiKey"]}\"")
+        buildConfigField("String", "PGY_APP_KEY", "\"${rootProject.ext.pgy["appKey"]}\"")
+
+        ndk {
+            abiFilters "armeabi-v7a"
+            //      abiFilters 'armeabi','x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+
+        multiDexEnabled true
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile 'src/main/AndroidManifest.xml'
+            res.srcDirs = ['src/main/res']
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
+
+    signingConfigs {
+        release {
+            keyAlias rootProject.ext.signing["keyAlias"]
+            keyPassword rootProject.ext.signing["keyPassword"]
+            storeFile file(rootProject.ext.signing["storeFile"])
+            storePassword(rootProject.ext.signing["storePassword"])
+        }
+    }
+
+    buildTypes {
+        debug {
+            //禁用多个 APK 生成
+            splits.abi.enable = false
+            splits.density.enable = false
+            //禁用PNG压缩
+            aaptOptions.cruncherEnabled = false
+            //是否混淆
+            minifyEnabled false
+            versionNameSuffix "-debug"
+            signingConfig signingConfigs.release
+        }
+        release {
+            minifyEnabled false
+            //            shrinkResources true
+            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro', 'proguard.cfg', 'arm_proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    flavorDimensions "SERVER"
+
+    productFlavors {
+
+        //测试环境
+        dev {
+            dimension "SERVER"
+            buildConfigField("String", "API_URL", "\"http://117.10.211.62:8003/ntocc/ntocc-driver/app/\"")
+        }
+
+        //生产环境
+        production {
+            dimension "SERVER"
+            buildConfigField("String", "API_URL", "\"http://117.10.211.62:8003/ntocc/ntocc-driver/app/\"")
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+}
+
+android.applicationVariants.all { variant ->
+    variant.outputs.all {
+        outputFileName = rootProject.ext.android["outPutApkName"]
+    }
+}
+
+kapt {
+    useBuildCache = true
+    javacOptions {
+        option("-Xmaxerrs", 500)
+    }
+    arguments {
+
+        arg("AROUTER_MODULE_NAME", project.getName())
+        arg("AROUTER_GENERATE_DOC", "enable")
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation project(':SmartCode')
+    kapt 'com.alibaba:arouter-compiler:1.2.2'
+    kapt 'com.google.dagger:dagger-compiler:2.23.2'
+}
+
+apply from: '../sc-task-jiagu.gradle'
+apply from: '../sc-task-upload.gradle'

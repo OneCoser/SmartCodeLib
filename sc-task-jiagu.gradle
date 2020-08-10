@@ -1,0 +1,178 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+def downloadUrl = Os.isFamily(Os.FAMILY_WINDOWS) ? rootProject.ext.jiagu["jiagubao_windows"] : (Os.isFamily(Os.FAMILY_MAC) ? rootProject.ext.jiagu["jiagubao_mac"] : rootProject.ext.jiagu["jiagubao_linux"])
+
+def zipPath = rootProject.ext.jiagu["zipPath"]
+def unzipPath = rootProject.ext.jiagu["unzipPath"]
+
+def getApkPath(String flavor) {
+    return "${projectDir.absolutePath}/build/outputs/apk/${flavor}/release/${rootProject.ext.android["outPutApkName"]}"
+}
+
+/**
+ * 加固
+ * @param config 配置加固可选项
+ * @param apkPath 要加固的文件路径
+ * @param outputPath 输出路径
+ * @param automulpkg 是否自动生成多渠道包
+ */
+def jiaGu(String config, String apkPath, String outputPath, boolean automulpkg) {
+    // 1. login
+    exec {
+        executable = 'java'
+        args = ['-jar', rootProject.ext.jiagu["jarPath"], '-login', rootProject.ext.jiagu["name"], rootProject.ext.jiagu["password"]]
+    }
+
+    exec {
+        executable = 'java'
+        args = ['-jar', rootProject.ext.jiagu["jarPath"], '-update']
+    }
+
+    exec {
+        executable = 'java'
+        args = ['-jar', rootProject.ext.jiagu["jarPath"], '-version']
+    }
+
+    // 2. import sign
+    exec {
+        executable = 'java'
+        args = ['-jar', rootProject.ext.jiagu["jarPath"], '-importsign',
+                rootProject.ext.signing["storeFile"],
+                rootProject.ext.signing["storePassword"],
+                rootProject.ext.signing["keyAlias"],
+                rootProject.ext.signing["keyPassword"]]
+    }
+
+    // 3. import channel
+    //        exec {
+    //            executable = 'java'
+    //            args = ['-jar', rootProject.ext.jiagu["jarPath"], '-importmulpkg', CHANNEL_CONFIG]
+    //        }
+    // 4. other config none
+    exec {
+        executable = 'java'
+        args = ['-jar', rootProject.ext.jiagu["jarPath"], '-config', config]
+    }
+
+    def jiaGuArgs
+    if (automulpkg) {
+        jiaGuArgs = ['-jar', rootProject.ext.jiagu["jarPath"], '-jiagu',
+                     apkPath,
+                     outputPath,
+                     '-autosign',
+                     '-automulpkg',
+                     '-pkgparam',
+                     rootProject.ext.jiagu["channelConfigPath"]
+        ]
+    } else {
+        jiaGuArgs = ['-jar', rootProject.ext.jiagu["jarPath"], '-jiagu',
+                     apkPath,
+                     outputPath,
+                     '-autosign'
+        ]
+    }
+    exec {
+        executable = 'java'
+        args = jiaGuArgs
+    }
+    println "加固的文件路径：${apkPath}"
+    println "加固后的文件路径：${outputPath}"
+}
+
+task download360jiagu {
+    doFirst {
+        def jarFile = file(rootProject.ext.jiagu["jarPath"])
+        if (jarFile.exists()) {
+            return
+        }
+        //如果 Zip 文件不存在就进行下载
+        def zipFile = file(zipPath)
+        if (!zipFile.exists()) {
+            if (!zipFile.parentFile.exists()) {
+                zipFile.parentFile.mkdirs()
+            }
+            exec {
+                executable = 'curl'
+                args = ['-o', zipPath, downloadUrl]
+            }
+        }
+    }
+    doLast {
+        //解压 Zip 文件
+        ant.unzip(src: zipPath, dest: unzipPath, encoding: "GBK")
+        //将解压后的文件开启读写权限，防止执行 Jar 文件没有权限执行
+        exec {
+            executable = 'chmod'
+            args = ['-R', '777', unzipPath]
+        }
+    }
+}
+
+/**
+ * 加固 Dev 包
+ * 执行命令：./gradlew releaseDevApk
+ */
+task releaseDevApk(dependsOn: ['assembleDevRelease', 'download360jiagu']) {
+    group = "publish"
+    doLast {
+        def apkOutputFile = file(rootProject.ext.jiagu["devOutputPath"])
+        checkOutPutDir(apkOutputFile)
+        def apkFile = file(getApkPath("dev"))
+        if (!apkFile.exists()) {
+            println("apk file is not exists：" + apkFile.absolutePath)
+            return
+        }
+        jiaGu("-", apkFile.absolutePath, apkOutputFile.absolutePath, false)
+    }
+}
+
+/**
+ * 加固 Production 包
+ * 执行命令：./gradlew releaseProductionApk
+ */
+task releaseProductionApk(dependsOn: ['assembleProductionRelease', 'download360jiagu']) {
+    group = "publish"
+    doLast {
+        def apkOutputFile = file(rootProject.ext.jiagu["productionOutputPath"])
+        checkOutPutDir(apkOutputFile)
+        def apkFile = file(getApkPath("production"))
+        if (!apkFile.exists()) {
+            println("apk file is not exists：" + apkFile.absolutePath)
+            return
+        }
+        jiaGu("-", apkFile.absolutePath, apkOutputFile.absolutePath, false)
+    }
+}
+
+/**
+ * 根据多渠道文件进行加固
+ * 执行命令：./gradlew releaseApks
+ */
+task releaseApks(dependsOn: ['assembleProductionRelease', 'download360jiagu']) {
+    group = "publish"
+    doLast {
+        def apkOutputFile = file(rootProject.ext.jiagu["productionOutputPath"])
+        checkOutPutDir(apkOutputFile)
+        def apkFile = file(getApkPath("production"))
+        if (!apkFile.exists()) {
+            println("apk file is not exists：" + apkFile.absolutePath)
+            return
+        }
+        jiaGu("-", apkFile.absolutePath, apkOutputFile.absolutePath, true)
+    }
+}
+
+private static void checkOutPutDir(File apkOutputFile) {
+    if (apkOutputFile.exists()) {
+        File[] files = apkOutputFile.listFiles()
+        if (files != null) {
+            for (File file : files) {
+                file.delete()
+            }
+        }
+    } else {
+        apkOutputFile.mkdirs()
+    }
+}
+
+

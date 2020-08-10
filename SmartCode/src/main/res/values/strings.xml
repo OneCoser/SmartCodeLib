@@ -1,0 +1,16 @@
+<resources>
+    <string name="public_loading" translatable="false">加载中…</string>
+    <string name="public_ui_null" translatable="false">暂无内容,刷新试试~</string>
+    <string name="public_ui_error" translatable="false">加载失败,点击重试~</string>
+    <string name="public_cancel" translatable="false">取消</string>
+    <string name="public_submit" translatable="false">提交</string>
+    <string name="public_sure" translatable="false">确定</string>
+    <string name="public_know" translatable="false">我知道了</string>
+    <string name="public_save" translatable="false">保存</string>
+    <string name="public_close" translatable="false">关闭</string>
+    <string name="public_next" translatable="false">下一步</string>
+    <string name="public_action_success" translatable="false">操作成功!</string>
+    <string name="public_action_error" translatable="false">操作失败!</string>
+    <string name="public_permission_denied_alert" translatable="false">拒绝%s权限后无法正常使用此功能,若需继续请前往设置打开</string>
+    <string name="public_permission_setting" translatable="false">去设置</string>
+</resources>
