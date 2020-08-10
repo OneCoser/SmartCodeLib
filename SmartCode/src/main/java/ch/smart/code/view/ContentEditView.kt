@@ -15,8 +15,8 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.smart.code.R
 import ch.smart.code.util.showToast
-import online.daoshang.util.isNotNullOrBlank
-import online.daoshang.util.pt
+import ch.smart.code.util.isNotNullOrBlank
+import ch.smart.code.util.pt
 
 class ContentEditView : LinearLayout {
 

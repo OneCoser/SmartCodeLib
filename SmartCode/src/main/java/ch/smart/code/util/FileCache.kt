@@ -1,14 +1,15 @@
 package ch.smart.code.util
 
 import android.os.Environment
+import com.blankj.utilcode.constant.MemoryConstants
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.EncryptUtils
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import io.reactivex.Observable
-import online.daoshang.util.isNotNullOrBlank
-import online.daoshang.util.rx.SimpleObserver
-import online.daoshang.util.rx.toIoAndMain
+import ch.smart.code.util.isNotNullOrBlank
+import ch.smart.code.util.rx.SimpleObserver
+import ch.smart.code.util.rx.toIoAndMain
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -186,4 +187,29 @@ object FileCache {
             })
     }
 
+    /**
+     * 文件可用空间是否大于传进来的参数
+     * @param sizeMb
+     * @return true: 空间足够  false：空间不足
+     */
+    @JvmOverloads
+    fun File?.isAvailableSpace(sizeMb: Int = 50): Boolean {
+        if (this == null) return false
+        var isHasSpace = false
+        if (!this.exists()) {
+            return isHasSpace
+        }
+        val freeSpace = try {
+            this.freeSpace
+        } catch (e: Exception) {
+            Timber.e(e)
+            return isHasSpace
+        }
+        val availableSpare = freeSpace / MemoryConstants.MB
+        //    Timber.d("path: %s availableSpare = %s MB sizeMb: %s", this.absolutePath, availableSpare, sizeMb)
+        if (availableSpare > sizeMb) {
+            isHasSpace = true
+        }
+        return isHasSpace
+    }
 }

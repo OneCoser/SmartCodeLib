@@ -8,7 +8,7 @@ import com.facebook.common.references.CloseableReference
 import com.facebook.datasource.DataSource
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
 import com.facebook.imagepipeline.image.CloseableImage
-import online.daoshang.util.pt
+import ch.smart.code.util.pt
 import timber.log.Timber
 
 abstract class BitmapToSpanDataSubscriber(

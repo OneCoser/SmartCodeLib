@@ -3,7 +3,7 @@ package ch.smart.code.util
 import android.content.Context
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.facade.service.SerializationService
-import online.daoshang.util.json
+import ch.smart.code.util.json
 import java.lang.reflect.Type
 
 @Route(path = ARouterJsonService.PATH)

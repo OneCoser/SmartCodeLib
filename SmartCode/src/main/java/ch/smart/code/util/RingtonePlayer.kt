@@ -8,9 +8,9 @@ import ch.smart.code.imageloader.isStartsWithHttp
 import com.blankj.utilcode.util.Utils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import online.daoshang.util.isAvailableSpace
-import online.daoshang.util.rx.SimpleObserver
-import online.daoshang.util.rx.toIoAndMain
+import ch.smart.code.util.isAvailableSpace
+import ch.smart.code.util.rx.SimpleObserver
+import ch.smart.code.util.rx.toIoAndMain
 import timber.log.Timber
 import zlc.season.rxdownload3.RxDownload
 import zlc.season.rxdownload3.core.Failed

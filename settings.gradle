@@ -1,5 +1,3 @@
 include ':app'
 include ':SmartCode'
-include ':SmartCode-MVP'
-include ':SmartCode-Util'
 rootProject.name = "SmartCodeLib"

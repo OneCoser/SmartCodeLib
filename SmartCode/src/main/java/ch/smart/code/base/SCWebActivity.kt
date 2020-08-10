@@ -13,7 +13,7 @@ import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import kotlinx.android.synthetic.main.public_activity_web.*
 import kotlinx.android.synthetic.main.public_title.*
-import online.daoshang.util.isNotNullOrBlank
+import ch.smart.code.util.isNotNullOrBlank
 
 /**
  * 类描述：

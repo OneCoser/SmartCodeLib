@@ -11,7 +11,7 @@ import ch.smart.code.R
 import ch.smart.code.view.span.SpanTextView
 import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
 import com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButtonDrawable
-import online.daoshang.util.isNotNullOrBlank
+import ch.smart.code.util.isNotNullOrBlank
 
 open class MsgSimpleAlert(context: Context) : BaseAlert(context) {
 

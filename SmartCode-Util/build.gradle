@@ -1,5 +1,0 @@
-apply plugin: 'com.github.dcendents.android-maven'
-group = 'com.github.TheGuarder'
-
-configurations.maybeCreate("default")
-artifacts.add("default", file('util-1.1.0.aar'))

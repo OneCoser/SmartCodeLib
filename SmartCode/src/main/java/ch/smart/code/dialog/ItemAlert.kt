@@ -13,8 +13,8 @@ import ch.smart.code.adapter.CommonRcvAdapter
 import ch.smart.code.adapter.item.AdapterItem
 import ch.smart.code.adapter.item.LayoutContainerItem
 import ch.smart.code.util.click
-import online.daoshang.util.LayoutManagerFactory
-import online.daoshang.util.pt
+import ch.smart.code.util.LayoutManagerFactory
+import ch.smart.code.util.pt
 
 open class ItemAlert(context: Context, listener: ItemAlertClickListener) : BaseAlert(context) {
 

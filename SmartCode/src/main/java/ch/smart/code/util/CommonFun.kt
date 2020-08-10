@@ -46,10 +46,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.*
 import okhttp3.OkHttpClient
-import online.daoshang.util.isNotNullOrBlank
-import online.daoshang.util.rx.SimpleObserver
-import online.daoshang.util.rx.clicksThrottle
-import online.daoshang.util.rx.toIoAndMain
+import ch.smart.code.util.rx.SimpleObserver
+import ch.smart.code.util.rx.toIoAndMain
+import com.jakewharton.rxbinding3.view.clicks
 import timber.log.Timber
 import java.math.BigDecimal
 import java.net.Proxy
@@ -716,6 +715,10 @@ fun openVideoSelect(
 }
 
 /** View扩展事件 Start */
+
+@JvmOverloads
+fun View.clicksThrottle(windowDuration: Long = 1000): Observable<Unit> =
+    this.clicks().throttleFirst(windowDuration, TimeUnit.MILLISECONDS)
 
 inline fun View.click(windowDuration: Long = 1000, crossinline action: () -> Unit) {
     this.clicksThrottle(windowDuration = windowDuration).subscribe(object : SimpleObserver<Unit>() {

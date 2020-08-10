@@ -6,7 +6,7 @@ import ch.smart.code.util.click
 import ch.smart.code.view.UIStatusView
 import com.blankj.utilcode.util.Utils
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
-import online.daoshang.util.LayoutManagerFactory
+import ch.smart.code.util.LayoutManagerFactory
 
 interface SCListView : SCBaseView {
 

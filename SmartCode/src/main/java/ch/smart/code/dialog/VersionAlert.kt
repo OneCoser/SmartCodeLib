@@ -10,7 +10,7 @@ import ch.smart.code.util.FileCache
 import ch.smart.code.util.showErrorToast
 import com.blankj.utilcode.util.ActivityUtils
 import io.reactivex.disposables.Disposable
-import online.daoshang.util.rx.toIoAndMain
+import ch.smart.code.util.rx.toIoAndMain
 import timber.log.Timber
 import zlc.season.rxdownload3.RxDownload
 import zlc.season.rxdownload3.core.Failed

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.DrawableRes
 import ch.smart.code.R
+import ch.smart.code.util.clicksThrottle
 import io.reactivex.Observable
-import online.daoshang.util.rx.clicksThrottle
 
 class UIStatusView : FrameLayout {
 

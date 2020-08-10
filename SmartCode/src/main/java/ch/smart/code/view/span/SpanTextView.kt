@@ -12,8 +12,8 @@ import androidx.appcompat.widget.AppCompatTextView
 import ch.smart.code.R
 import ch.smart.code.imageloader.downLoadForUiThread
 import com.facebook.common.util.UriUtil
-import online.daoshang.util.isNotNullOrBlank
-import online.daoshang.util.pt
+import ch.smart.code.util.isNotNullOrBlank
+import ch.smart.code.util.pt
 import timber.log.Timber
 import java.util.*
 
