@@ -14,8 +14,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import ch.smart.code.BuildConfig
 import ch.smart.code.R
+import ch.smart.code.SmartCodeApp
 import ch.smart.code.dialog.LoadingDialog
 import ch.smart.code.dialog.MsgAlert
 import ch.smart.code.view.ContentEditView
@@ -71,7 +71,7 @@ fun exitApp(status: Int = 0) {
 fun getOkHttpBuilder(): OkHttpClient.Builder {
     val client = ArmsUtils.obtainAppComponentFromContext(Utils.getApp()).okHttpClient()
     val builder = OkHttpClient.Builder()
-    if (!BuildConfig.DEBUG) {
+    if (!SmartCodeApp.DEBUG) {
         builder.proxy(Proxy.NO_PROXY)
     }
     return builder.dispatcher(client.dispatcher())

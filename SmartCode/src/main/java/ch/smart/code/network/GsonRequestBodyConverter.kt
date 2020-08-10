@@ -1,6 +1,6 @@
 package ch.smart.code.network
 
-import ch.smart.code.BuildConfig
+import ch.smart.code.SmartCodeApp
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import okhttp3.MediaType
@@ -20,7 +20,7 @@ internal class GsonRequestBodyConverter<T>(
 
     @Throws(IOException::class)
     override fun convert(value: T): RequestBody {
-        if (BuildConfig.DEBUG) {
+        if (SmartCodeApp.DEBUG) {
             Timber.i("Http：%s", gson.toJson(value))
         }
         val buffer = Buffer()

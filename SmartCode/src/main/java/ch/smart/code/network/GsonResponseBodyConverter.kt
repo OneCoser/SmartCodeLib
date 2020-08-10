@@ -1,6 +1,6 @@
 package ch.smart.code.network
 
-import ch.smart.code.BuildConfig
+import ch.smart.code.SmartCodeApp
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import okhttp3.ResponseBody
@@ -23,7 +23,7 @@ internal class GsonResponseBodyConverter<T>(
         var responseStr: String? = null
         return try {
             responseStr = value.string()
-            if (BuildConfig.DEBUG) {
+            if (SmartCodeApp.DEBUG) {
                 Timber.i("Http：%s", responseStr)
             }
             val json = JSONObject(responseStr)

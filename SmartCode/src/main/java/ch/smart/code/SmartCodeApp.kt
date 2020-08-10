@@ -52,6 +52,11 @@ import java.util.concurrent.TimeUnit
 
 open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
 
+    companion object {
+        @JvmStatic
+        var DEBUG: Boolean = false
+    }
+
     private var appDelegate: AppLifecycles? = null
 
     override fun onCreate() {
@@ -107,7 +112,7 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         Utils.init(this)
         if (!ProcessUtils.isMainProcess()) return
         Timber.plant(Timber.DebugTree())
-        if (BuildConfig.DEBUG) {
+        if (SmartCodeApp.DEBUG) {
             ARouter.openLog() // 打印日志
             ARouter.openDebug() // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
         }
@@ -234,7 +239,7 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
     private fun initRxDownload() {
         // 初始化下载器
         val downloadConfig = DownloadConfig.Builder.create(this)
-            .setDebug(BuildConfig.DEBUG)
+            .setDebug(SmartCodeApp.DEBUG)
             .setMaxMission(3)
             .enableAutoStart(false) // 自动开始下载
             .enableNotification(false) // 启用Notification

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 class SCConfigModule : ConfigModule {
     
     override fun applyOptions(context: Context, builder: GlobalConfigModule.Builder) {
-        if (BuildConfig.DEBUG) {
+        if (SmartCodeApp.DEBUG) {
             builder.formatPrinter(SCPrinter())
         } else {
             builder.printHttpLogLevel(RequestInterceptor.Level.NONE)
