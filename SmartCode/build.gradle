@@ -48,6 +48,8 @@ dependencies {
     //    api fileTree(dir: "libs", include: ["*.jar"])
     //    api 'online.daoshang:util:1.1.0'
     //    api 'com.github.imliujun:MVPArms:3.0.2@aar'
+    api project(':SmartCode-MVP')
+    api project(':SmartCode-Util')
 
     api 'com.google.code.gson:gson:2.8.6'
     api 'androidx.media:media:1.1.0'
