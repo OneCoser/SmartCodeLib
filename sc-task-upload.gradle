@@ -6,7 +6,12 @@ private def uploadPGY(String filePath, String buildChannelShortcut) {
     def stdout = new ByteArrayOutputStream()
     exec {
         executable = 'curl'
-        args = ['-F', "file=@${filePath}", '-F', "_api_key=${rootProject.ext.pgy["apiKey"]}", '-F', 'buildInstallType=2', '-F', "buildPassword=${rootProject.ext.pgy["downloadPassword"]}", '-F', "buildChannelShortcut=${buildChannelShortcut}", rootProject.ext.pgy["uploadUrl"]]
+        args = ['-F', "file=@${filePath}", '-F', "_api_key=${rootProject.ext.pgy["apiKey"]}",
+                '-F', "buildInstallType=${rootProject.ext.pgy["downloadType"]}",
+                '-F', "buildPassword=${rootProject.ext.pgy["downloadPassword"]}",
+                '-F', "buildChannelShortcut=${buildChannelShortcut}",
+                rootProject.ext.pgy["uploadUrl"]
+        ]
         standardOutput = stdout
     }
     String output = stdout.toString()
