@@ -49,6 +49,7 @@ import okhttp3.OkHttpClient
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
 import com.jakewharton.rxbinding3.view.clicks
+import com.qmuiteam.qmui.alpha.QMUIAlphaButton
 import timber.log.Timber
 import java.math.BigDecimal
 import java.net.Proxy
@@ -728,7 +729,7 @@ inline fun View.click(windowDuration: Long = 1000, crossinline action: () -> Uni
     })
 }
 
-inline fun QMUIRoundButton.click(
+inline fun QMUIAlphaButton.click(
     alphaPress: Boolean = true,
     alphaDisable: Boolean = true,
     duration: Long = 1000,

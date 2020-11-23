@@ -7,7 +7,6 @@ import com.blankj.utilcode.util.EncryptUtils
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.Utils
 import io.reactivex.Observable
-import ch.smart.code.util.isNotNullOrBlank
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
 import timber.log.Timber
@@ -130,16 +129,17 @@ object FileCache {
     fun getSuffix(path: String, defSuffix: String? = null): String? {
         try {
             if (path.contains(".")) {
-                val index = path.lastIndexOf(".") + 1
-                val check1 = path.lastIndexOf("?")
-                if (check1 >= 0 && index < check1) {
-                    return path.substring(index, check1)
+                val check = path.indexOfFirst {
+                    it.toString() == "?"
                 }
-                val check2 = path.lastIndexOf("&")
-                if (check2 >= 0 && index < check2) {
-                    return path.substring(index, check2)
+                return if (check >= 0) {
+                    val checkPath = path.substring(0, check)
+                    val index = checkPath.lastIndexOf(".") + 1
+                    checkPath.substring(index)
+                } else {
+                    val index = path.lastIndexOf(".") + 1
+                    path.substring(index)
                 }
-                return path.substring(index)
             }
         } catch (e: Exception) {
             e.printStackTrace()

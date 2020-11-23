@@ -59,6 +59,16 @@ private def uploadFIRFile(String filePath, String key, String token, String uplo
     println stdout.toString()
 }
 
+private def upload(String filePath) {
+    if (rootProject.ext.pgy["enable"]) {
+        uploadPGY(filePath, "")
+    } else if (rootProject.ext.fir["enable"]) {
+        uploadFIR(filePath)
+    } else {
+        println "upload: " + filePath
+    }
+}
+
 private def getApkFile(String fileDir) {
     def dir = file(fileDir)
     if (!dir.exists()) {
@@ -87,8 +97,7 @@ task uploadDevApk(dependsOn: 'releaseDevApk') {
     doLast {
         def apkFile = getApkFile(rootProject.ext.jiagu["devOutputPath"])
         if (apkFile != null) {
-            uploadPGY(apkFile.absolutePath, "")
-//            uploadFIR(apkFile.absolutePath)
+            upload(apkFile.absolutePath)
         }
     }
 }
@@ -103,17 +112,7 @@ task uploadProductionApk(dependsOn: 'releaseProductionApk') {
     doLast {
         def apkFile = getApkFile(rootProject.ext.jiagu["productionOutputPath"])
         if (apkFile != null) {
-            uploadPGY(apkFile.absolutePath, "")
-//            uploadFIR(apkFile.absolutePath)
+            upload(apkFile.absolutePath)
         }
     }
 }
-
-//task uploadFirApk() {
-//    group = "publish"
-//
-//    def apkFile = getApkFile("${projectDir.absolutePath}/build/outputs/apk/dev/debug/")
-//    if (apkFile != null) {
-//        uploadFIR(apkFile.absolutePath)
-//    }
-//}

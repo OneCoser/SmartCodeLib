@@ -7,14 +7,16 @@ ext {
                storeFile    : '../sign.keystore',
                storePassword: 'SmartCode']
 
-    pgy = [apiKey          : "b5d9694646f2be460fd0da6504ebb7cd",
+    pgy = ["enable"        : false,
+           apiKey          : "b5d9694646f2be460fd0da6504ebb7cd",
            appKey          : "3916f63b2763adcc78cf255f6623e636",
            uploadUrl       : "https://www.pgyer.com/apiv2/app/upload",
            downloadType    : "2",//2=密码安装，3=邀请安装
            downloadPassword: "test"
     ]
 
-    fir = [apiKey   : "c351074668d37ce357a515720753c599",
+    fir = ["enable"        : false,
+           apiKey   : "c351074668d37ce357a515720753c599",
            uploadUrl: "http://api.bq04.com/apps",
            uploadLog: "优化代码"
     ]
