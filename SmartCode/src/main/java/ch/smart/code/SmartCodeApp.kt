@@ -11,10 +11,7 @@ import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.CameraXConfig
 import androidx.multidex.MultiDex
 import ch.smart.code.imageloader.FrescoConfig
-import ch.smart.code.util.FileCache
-import ch.smart.code.util.PictureSelectorEngineImp
-import ch.smart.code.util.formatTimeStr
-import ch.smart.code.util.getOkHttpBuilder
+import ch.smart.code.util.*
 import com.alibaba.android.arouter.launcher.ARouter
 import com.blankj.utilcode.util.ProcessUtils
 import com.blankj.utilcode.util.Utils
@@ -68,7 +65,7 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         }
         initConfig()
         val time = getOvertime()
-        val now = formatTimeStr(System.currentTimeMillis(), "yyyyMMdd").toIntOrNull() ?: 0
+        val now = System.currentTimeMillis().safeTimeStr("yyyyMMdd").safeInt()
         if (time > 0 && now > 0 && time < now) {
             throw RuntimeException("APP已过期")
         }

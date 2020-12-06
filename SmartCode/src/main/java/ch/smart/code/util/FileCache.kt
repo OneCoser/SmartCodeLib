@@ -132,14 +132,27 @@ object FileCache {
                 val check = path.indexOfFirst {
                     it.toString() == "?"
                 }
-                return if (check >= 0) {
+                val str = if (check >= 0) {
                     val checkPath = path.substring(0, check)
                     val index = checkPath.lastIndexOf(".") + 1
-                    checkPath.substring(index)
+                    val check2 = checkPath.lastIndexOf("/")
+                    if (check2 > index) {
+                        getSuffix(path.substring(check + 1), defSuffix = defSuffix)
+                    } else {
+                        checkPath.substring(index)
+                    }
                 } else {
                     val index = path.lastIndexOf(".") + 1
-                    path.substring(index)
+                    val checkPath = path.substring(index)
+                    val check2 = checkPath.indexOfFirst { it.toString() == "&" }
+                    if (check2 > 0) {
+                        checkPath.substring(0, check2)
+                    } else {
+                        checkPath
+                    }
                 }
+                Timber.i("截取到后缀：%s \n %s", str, path)
+                return str
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -151,6 +164,7 @@ object FileCache {
         url: String,
         dir: File? = getDownloadDir(),
         tag: String? = null,
+        fixSuffix: String? = null,
         defSuffix: String? = null
     ): File? {
         return if (dir?.exists() == true) File(
@@ -158,7 +172,7 @@ object FileCache {
                 "%s_%s.%s",
                 if (tag.isNotNullOrBlank()) tag else "",
                 EncryptUtils.encryptMD5ToString(url).toUpperCase(),
-                getSuffix(url, defSuffix = defSuffix)
+                if (fixSuffix.isNullOrEmpty()) getSuffix(url, defSuffix = defSuffix) else fixSuffix
             )
         ) else null
     }
@@ -211,5 +225,21 @@ object FileCache {
             isHasSpace = true
         }
         return isHasSpace
+    }
+
+    fun getStorageDir(type: String = Environment.DIRECTORY_DOWNLOADS): File? {
+        try {
+            if (Environment.MEDIA_MOUNTED == Environment.getExternalStorageState() || !Environment.isExternalStorageRemovable()) {
+                val file = Environment.getExternalStoragePublicDirectory(type)
+                if (FileUtils.createOrExistsDir(file)) {
+                    return file
+                } else {
+                    Timber.e("文件夹不存在：%s", file?.absolutePath)
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        return null
     }
 }

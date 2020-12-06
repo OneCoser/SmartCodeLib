@@ -218,85 +218,6 @@ fun dismissLoading() {
     loadingDialog = null
 }
 
-/** 转换相关 Start */
-
-fun formatMoney(money: Double): Double {
-    //保留小数点后两位，只舍不入
-    try {
-        return formatMoneyStr(money).toDouble()
-    } catch (e: Exception) {
-        Timber.e(e)
-    }
-    return BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).toDouble()
-}
-
-fun formatMoneyStr(money: Double): String {
-    //保留小数点后两位，只舍不入
-    try {
-        //去掉科学计数法显示
-        val nf = NumberFormat.getInstance()
-        nf.isGroupingUsed = false
-        val str = nf.format(money)
-        val index = str.indexOf(".")
-        if (index >= 0 && str.length - index > 3) {
-            return str.substring(0, index + 3)
-        }
-        return str
-    } catch (e: Exception) {
-        Timber.e(e)
-    }
-    return BigDecimal(money).setScale(2, BigDecimal.ROUND_DOWN).toString()
-}
-
-fun formatTimeStr(time: Long, formatterType: String): String {
-    try {
-        return SimpleDateFormat(formatterType).format(Date(time))
-    } catch (e: Exception) {
-        Timber.e(e)
-    }
-    return time.toString()
-}
-
-fun formatTime(timeStr: String?, formatterType: String): Long {
-    if (timeStr.isNullOrEmpty()) return 0
-    try {
-        return SimpleDateFormat(formatterType).parse(timeStr)?.time ?: 0
-    } catch (e: Exception) {
-        Timber.e(e)
-    }
-    return 0
-}
-
-fun formatDurationStrCN(millis: Long): String {
-    val totalSeconds = millis / 1000
-    val minutes = totalSeconds / 60 % 60
-    val hours = totalSeconds / 3600
-    if (hours > 0 && minutes > 0) {
-        return String.format("%s小时%s分钟", hours, minutes)
-    }
-    if (hours > 0) {
-        return String.format("%s小时", hours)
-    }
-    return String.format("%s秒", totalSeconds)
-}
-
-fun formatDurationStr(millis: Long, keepHour: Boolean = true): String {
-    val totalSeconds = millis / 1000
-    if (totalSeconds <= 0) {
-        return if (keepHour) "00:00:00" else "00:00"
-    }
-    val seconds = totalSeconds % 60
-    val minutes = totalSeconds / 60 % 60
-    val hours = totalSeconds / 3600
-    val stringBuilder = StringBuilder()
-    val formatter = Formatter(stringBuilder, Locale.getDefault())
-    return when {
-        hours > 0 -> formatter.format("%02d:%02d:%02d", hours, minutes, seconds)
-        keepHour -> formatter.format("00:%02d:%02d", minutes, seconds)
-        else -> formatter.format("%02d:%02d", minutes, seconds)
-    }.toString()
-}
-
 /** 权限请求相关 Start */
 
 fun sendPermissionResult(list: List<String>, result: Boolean) {
@@ -837,4 +758,120 @@ fun checkBindTxt(vararg txts: String?): Boolean {
     if (txts.isNullOrEmpty()) return false
     txts.forEach { if (it.isNullOrEmpty()) return false }
     return true
+}
+
+/** 安全转换相关 Start */
+
+fun String?.safeDouble(default: Double = 0.0): Double {
+    try {
+        return this?.toDoubleOrNull() ?: default
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return default
+}
+
+fun String?.safeInt(default: Int = 0): Int {
+    try {
+        return this?.toIntOrNull() ?: default
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return default
+}
+
+fun Any?.safeSub(start: Int, end: Int? = null): String? {
+    val str = this?.toString() ?: return null
+    try {
+        if (end == null || end <= start || end > str.length) {
+            return str.substring(start)
+        }
+        return str.substring(start, end)
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return null
+}
+
+fun String?.safeScale(scale: Int = 4, default: String = "0.0"): BigDecimal {
+    return BigDecimal(this ?: default).setScale(scale, BigDecimal.ROUND_DOWN)
+}
+
+fun Double?.safeScale(scale: Int = 4, default: Double = 0.0, useNF: Boolean = false): BigDecimal {
+    val data = this ?: default
+    if (useNF) {
+        //去掉科学计数法显示
+        try {
+            val nf = NumberFormat.getInstance()
+            nf.isGroupingUsed = false
+            val str = nf.format(data)
+            val index = str.indexOf(".") + scale + 1
+            return str.safeSub(0, index).safeScale(scale = scale)
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+    return data.toString().safeScale(scale = scale)
+}
+
+fun Long?.safeTimeStr(formatterType: String): String? {
+    val time = this ?: return null
+    try {
+        return SimpleDateFormat(formatterType).format(Date(time))
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return time.toString()
+}
+
+fun String?.safeTimeMillis(formatterType: String, default: Long = 0): Long {
+    if (this.isNullOrEmpty()) return default
+    try {
+        return SimpleDateFormat(formatterType).parse(this)?.time ?: default
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return default
+}
+
+fun Long?.safeDurationCN(ismMillis: Boolean = true): String {
+    try {
+        val time = this ?: 0
+        val totalSeconds = if (ismMillis) time / 1000 else time
+        val minutes = totalSeconds / 60 % 60
+        val hours = totalSeconds / 3600
+        if (hours > 0 && minutes > 0) {
+            return String.format("%s小时%s分钟", hours, minutes)
+        }
+        if (hours > 0) {
+            return String.format("%s小时", hours)
+        }
+        return String.format("%s秒", totalSeconds)
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return ""
+}
+
+fun Long?.safeDuration(ismMillis: Boolean = true, keepHour: Boolean = true): String {
+    try {
+        val time = this ?: 0
+        val totalSeconds = if (ismMillis) time / 1000 else time
+        if (totalSeconds <= 0) {
+            return if (keepHour) "00:00:00" else "00:00"
+        }
+        val seconds = totalSeconds % 60
+        val minutes = totalSeconds / 60 % 60
+        val hours = totalSeconds / 3600
+        val stringBuilder = StringBuilder()
+        val formatter = Formatter(stringBuilder, Locale.getDefault())
+        return when {
+            hours > 0 -> formatter.format("%02d:%02d:%02d", hours, minutes, seconds)
+            keepHour -> formatter.format("00:%02d:%02d", minutes, seconds)
+            else -> formatter.format("%02d:%02d", minutes, seconds)
+        }.toString()
+    } catch (e: Exception) {
+        Timber.e(e)
+    }
+    return ""
 }
