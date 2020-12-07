@@ -7,8 +7,12 @@ import ch.smart.code.adapter.StatusBarAdapter
 import ch.smart.code.base.SCReaderActivity
 import ch.smart.code.base.SCWebActivity
 import ch.smart.code.dialog.ItemAlert
-import ch.smart.code.util.click
-import ch.smart.code.util.requestForStartup
+import ch.smart.code.network.HttpObserver
+import ch.smart.code.util.*
+import ch.smart.code.util.rx.toIoAndMain
+import com.blankj.utilcode.util.ActivityUtils
+import com.blankj.utilcode.util.Utils
+import com.jess.arms.utils.ArmsUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
@@ -16,7 +20,7 @@ class MainActivity : Activity(), StatusBarAdapter {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        testClick.click {
+        testReader.click {
             ItemAlert(
                 this,
                 object : ItemAlert.ItemAlertClickListener {
@@ -31,6 +35,23 @@ class MainActivity : Activity(), StatusBarAdapter {
                     tag = "http://center.voniu.com/api/m/v1/file/get?path=reportpdf/6bbccd16-9ad9-4d5d-8fc5-b880fdd59120.pdf&token=164e6594-7492-45d9-902e-1873aa9f9d65"
                 )
                 .setCanceledOnTouchOutsideS(true).setCancelableS(true).show()
+        }
+        testApi.click {
+            ArmsUtils.obtainAppComponentFromContext(Utils.getApp())
+                .repositoryManager()
+                .obtainRetrofitService(ApiService::class.java)
+                .loadList(mapOf("userId" to "2002"))
+                .toIoAndMain()
+                .doOnSubscribe {
+                    showLoading(ActivityUtils.getTopActivity(), cancelable = false)
+                }
+                .doOnComplete {
+                    dismissLoading()
+                }.subscribe(object : HttpObserver<List<String>>() {
+                    override fun onNext(t: List<String>) {
+                        showSuccessToast("请求成功!")
+                    }
+                })
         }
         requestForStartup(this) {
             Timber.i("初始化权限成功")

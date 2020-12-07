@@ -15,7 +15,13 @@ class GsonConverterFactory private constructor(private val gson: Gson) : Convert
         annotations: Array<Annotation>,
         retrofit: Retrofit
     ): Converter<ResponseBody, *> {
-        return GsonResponseBodyConverter(gson, gson.getAdapter(TypeToken.get(type)), type)
+        val typeToken = TypeToken.get(type)
+        return GsonResponseBodyConverter(
+            gson,
+            gson.getAdapter(typeToken),
+            typeToken.rawType.name == "java.util.List",
+            type
+        )
     }
 
     override fun requestBodyConverter(

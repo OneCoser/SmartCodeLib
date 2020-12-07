@@ -4,7 +4,7 @@
     package="ch.smart.code.lib">
 
     <application
-        android:name="ch.smart.code.SmartCodeApp"
+        android:name="ch.smart.code.lib.CustomApp"
         android:allowBackup="false"
         android:extractNativeLibs="true"
         android:hardwareAccelerated="true"

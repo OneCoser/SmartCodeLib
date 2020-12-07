@@ -10,7 +10,7 @@
     android:orientation="vertical">
 
     <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
-        android:id="@+id/testClick"
+        android:id="@+id/testReader"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/public_pt_40"
         android:layout_marginTop="@dimen/public_pt_10"
@@ -18,6 +18,20 @@
         android:paddingStart="@dimen/public_pt_15"
         android:paddingEnd="@dimen/public_pt_15"
         android:text="打开阅读器"
+        android:textColor="@color/public_colorPrimary"
+        android:textSize="@dimen/public_font_16pt"
+        app:qmui_backgroundColor="@color/public_white"
+        app:qmui_isRadiusAdjustBounds="true" />
+
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/testApi"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/public_pt_40"
+        android:layout_marginTop="@dimen/public_pt_10"
+        android:gravity="center"
+        android:paddingStart="@dimen/public_pt_15"
+        android:paddingEnd="@dimen/public_pt_15"
+        android:text="测试网络请求"
         android:textColor="@color/public_colorPrimary"
         android:textSize="@dimen/public_font_16pt"
         app:qmui_backgroundColor="@color/public_white"

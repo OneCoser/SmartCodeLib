@@ -15,6 +15,7 @@ import java.lang.reflect.Type
 internal class GsonResponseBodyConverter<T>(
     private val gson: Gson,
     private val adapter: TypeAdapter<T>,
+    private val isArray: Boolean,
     private val type: Type
 ) : Converter<ResponseBody, T> {
 
@@ -29,14 +30,12 @@ internal class GsonResponseBodyConverter<T>(
             val json = JSONObject(responseStr)
             val code = json.optString(ResponseConfig.CODE_FIELD)
             if (code == ResponseConfig.SUCCESS_STATUS_CODE) {
-                val isList = type == List::class.java
                 getT(
                     when {
                         json.has(ResponseConfig.DATA_FIELD) -> json.optString(ResponseConfig.DATA_FIELD)
-                        isList -> "[]"
+                        isArray -> "[]"
                         else -> "{}"
                     }
-                    , isList
                 )
             } else {
                 throw ApiException(code, json.optString(ResponseConfig.MSG_FIELD))
@@ -50,9 +49,9 @@ internal class GsonResponseBodyConverter<T>(
     }
 
     @Throws(IOException::class)
-    private fun getT(data: String?, isList: Boolean): T {
+    private fun getT(data: String?): T {
         val isNull = data.isNullOrBlank() || data.isNullOrEmpty() || data == "null"
-        if (isList && isNull) {
+        if (isArray && isNull) {
             return adapter.read(gson.newJsonReader(StringReader("[]")))
         }
         if (isNull) {

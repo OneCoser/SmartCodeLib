@@ -81,13 +81,13 @@ android {
         //测试环境
         dev {
             dimension "SERVER"
-            buildConfigField("String", "API_URL", "\"http://117.10.211.62:8003/ntocc/ntocc-driver/app/\"")
+            buildConfigField("String", "API_URL", "\"http://139.224.19.165:8888/\"")
         }
 
         //生产环境
         production {
             dimension "SERVER"
-            buildConfigField("String", "API_URL", "\"http://117.10.211.62:8003/ntocc/ntocc-driver/app/\"")
+            buildConfigField("String", "API_URL", "\"http://139.224.19.165:8888/\"")
         }
     }
 
