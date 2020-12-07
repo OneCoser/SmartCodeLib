@@ -29,12 +29,14 @@ internal class GsonResponseBodyConverter<T>(
             val json = JSONObject(responseStr)
             val code = json.optString(ResponseConfig.CODE_FIELD)
             if (code == ResponseConfig.SUCCESS_STATUS_CODE) {
+                val isList = type == List::class.java
                 getT(
-                    if (json.has(ResponseConfig.DATA_FIELD)) {
-                        json.optString(ResponseConfig.DATA_FIELD)
-                    } else {
-                        "{}"
+                    when {
+                        json.has(ResponseConfig.DATA_FIELD) -> json.optString(ResponseConfig.DATA_FIELD)
+                        isList -> "[]"
+                        else -> "{}"
                     }
+                    , isList
                 )
             } else {
                 throw ApiException(code, json.optString(ResponseConfig.MSG_FIELD))
@@ -48,8 +50,12 @@ internal class GsonResponseBodyConverter<T>(
     }
 
     @Throws(IOException::class)
-    private fun getT(data: String?): T {
-        if (data.isNullOrBlank() || data.isNullOrEmpty() || data == "null") {
+    private fun getT(data: String?, isList: Boolean): T {
+        val isNull = data.isNullOrBlank() || data.isNullOrEmpty() || data == "null"
+        if (isList && isNull) {
+            return adapter.read(gson.newJsonReader(StringReader("[]")))
+        }
+        if (isNull) {
             when (type) {
                 String::class.java -> {
                     return "" as T

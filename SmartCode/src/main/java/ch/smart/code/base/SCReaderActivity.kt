@@ -16,6 +16,7 @@ import com.tencent.smtt.sdk.WebViewClient
 import ch.smart.code.util.isNotNullOrBlank
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
+import ch.smart.code.view.UIStatusView
 import com.tencent.smtt.sdk.TbsReaderView
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.public_activity_reader.*
@@ -179,6 +180,10 @@ open class SCReaderActivity : SCBaseActivity<IPresenter>() {
 
     open fun getReaderView(): View? {
         return readerView
+    }
+
+    open fun getReaderStatusView(): UIStatusView {
+        return readerStatus
     }
 
     private fun destroyReaderView(view: View?) {
