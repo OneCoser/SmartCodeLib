@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import ch.smart.code.R
+import ch.smart.code.imageloader.isStartsWithHttp
 import ch.smart.code.util.FileCache
 import ch.smart.code.util.initSetting
 import ch.smart.code.util.showErrorToast
@@ -37,6 +38,14 @@ open class SCReaderActivity : SCBaseActivity<IPresenter>() {
 
     companion object {
         const val PATH = "/SmartCode/activity/sc_reader"
+        const val FILE_PREFIX = "file://"
+
+        fun getFilePath(file: File?): String? {
+            return if (file?.exists() == true) {
+                FILE_PREFIX + file.absolutePath
+            } else null
+        }
+
         fun open(holdTitle: String? = null, path: String?) {
             if (path.isNullOrEmpty()) return
             try {
@@ -78,8 +87,15 @@ open class SCReaderActivity : SCBaseActivity<IPresenter>() {
 
     private fun loadReader() {
         readerStatus.showLoading()
+        val isHttp = path.isStartsWithHttp()
+        val isFile = path.startsWith(FILE_PREFIX)
+        if (!isHttp && !isFile) {
+            Timber.i("文件地址错误:%s", path)
+            readerStatus.showError(msg = "文件地址错误!")
+            return
+        }
         val ext = FileCache.getSuffix(path)
-        if (ext.isNullOrEmpty() || !TbsReaderView.isSupportExt(this, ext)) {
+        if (isHttp && (ext.isNullOrEmpty() || !TbsReaderView.isSupportExt(this, ext))) {
             Timber.i("加载网页：%s \n %s", path, ext)
             addReaderViewToShow(WebView(this).apply {
                 this.webViewClient = object : WebViewClient() {
@@ -100,9 +116,13 @@ open class SCReaderActivity : SCBaseActivity<IPresenter>() {
             return
         }
         disDownload()
-        val file = FileCache.getUrlFile(path, fixSuffix = ext)
+        val file = if (isFile) {
+            File(path.replaceFirst(FILE_PREFIX, ""))
+        } else {
+            FileCache.getUrlFile(path, fixSuffix = ext)
+        }
         Timber.i("加载文件：%s \n %s", path, file?.absolutePath)
-        if (file == null || file.exists()) {
+        if (isFile || file == null || file.exists()) {
             showTbsReader(file, ext)
             return
         }

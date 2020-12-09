@@ -2,6 +2,7 @@ package ch.smart.code.lib
 
 import android.app.Activity
 import android.graphics.Color
+import android.media.RingtoneManager
 import android.os.Bundle
 import ch.smart.code.adapter.StatusBarAdapter
 import ch.smart.code.base.SCReaderActivity
@@ -34,13 +35,14 @@ class MainActivity : Activity(), StatusBarAdapter {
                     "文件",
                     tag = "http://center.voniu.com/api/m/v1/file/get?path=reportpdf/6bbccd16-9ad9-4d5d-8fc5-b880fdd59120.pdf&token=164e6594-7492-45d9-902e-1873aa9f9d65"
                 )
+                .addItem("错误地址", tag = "12344343")
                 .setCanceledOnTouchOutsideS(true).setCancelableS(true).show()
         }
         testApi.click {
             ArmsUtils.obtainAppComponentFromContext(Utils.getApp())
                 .repositoryManager()
                 .obtainRetrofitService(ApiService::class.java)
-                .loadList(mapOf("userId" to "2002"))
+                .loadList(mapOf("userId" to "2001"))
                 .toIoAndMain()
                 .doOnSubscribe {
                     showLoading(ActivityUtils.getTopActivity(), cancelable = false)
@@ -52,6 +54,9 @@ class MainActivity : Activity(), StatusBarAdapter {
                         showSuccessToast("请求成功!")
                     }
                 })
+        }
+        testRing.click {
+            RingtonePlayer(repeat = false).start(type = RingtoneManager.TYPE_NOTIFICATION)
         }
         requestForStartup(this) {
             Timber.i("初始化权限成功")

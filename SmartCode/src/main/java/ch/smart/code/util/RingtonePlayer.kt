@@ -59,11 +59,11 @@ class RingtonePlayer(private val repeat: Boolean = true) {
         startLoad(url, file)
     }
 
-    fun start() {
+    fun start(type: Int = RingtoneManager.TYPE_RINGTONE) {
         if (isLoading() || isPlaying()) {
             return
         }
-        startPlay(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE))
+        startPlay(RingtoneManager.getDefaultUri(type))
     }
 
     private fun startLoad(url: String, file: File) {
