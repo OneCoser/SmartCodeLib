@@ -61,7 +61,7 @@ class UIStatusView : FrameLayout {
     @JvmOverloads
     fun showError(
         msg: String = context.getString(R.string.public_ui_error),
-        @DrawableRes icon: Int = R.drawable.public_ic_error
+        @DrawableRes icon: Int = R.drawable.public_ic_empty_or_error
     ) {
         showStatus(STATUS_ERROR)
         hintView.setEmptyText(msg)
@@ -71,7 +71,7 @@ class UIStatusView : FrameLayout {
     @JvmOverloads
     fun showEmpty(
         msg: String = context.getString(R.string.public_ui_null),
-        @DrawableRes icon: Int = R.drawable.public_ic_empty
+        @DrawableRes icon: Int = R.drawable.public_ic_empty_or_error
     ) {
         showStatus(STATUS_EMPTY)
         hintView.setEmptyText(msg)

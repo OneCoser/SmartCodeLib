@@ -3,7 +3,10 @@ package ch.smart.code.lib
 import ch.smart.code.network.BaseApi
 import ch.smart.code.network.IHttpHandler
 import ch.smart.code.network.OkHttpFactory
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import java.util.concurrent.TimeUnit
 
 /**
@@ -27,7 +30,23 @@ object ApiManager : BaseApi() {
     }
 
     override fun provideHttpHandler(): IHttpHandler? {
-        return AppHttpHandler()
+        return object : IHttpHandler {
+
+            override fun onHttpRequestBefore(chain: Interceptor.Chain, request: Request): Request {
+                //添加公共请求头信息
+                val builder = request.newBuilder()
+                builder.addHeader("token", "123456")
+                return builder.build()
+            }
+
+            override fun onHttpResultResponse(
+                httpResult: String?,
+                chain: Interceptor.Chain,
+                response: Response
+            ): Response {
+                return response
+            }
+        }
     }
 
     override fun provideDomainAndUrl(): Map<String, String>? {

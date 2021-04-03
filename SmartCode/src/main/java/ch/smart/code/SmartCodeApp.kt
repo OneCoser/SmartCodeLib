@@ -12,9 +12,6 @@ import ch.smart.code.imageloader.FrescoConfig
 import ch.smart.code.mvp.app.AppDelegate
 import ch.smart.code.network.OkHttpFactory
 import ch.smart.code.util.*
-import com.alibaba.android.arouter.launcher.ARouter
-import com.blankj.utilcode.util.ProcessUtils
-import com.blankj.utilcode.util.Utils
 import com.getkeepsafe.relinker.ReLinker
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.fresco.FrescoImageLoader
@@ -86,14 +83,8 @@ open class SmartCodeApp : Application(), IApp {
     }
 
     open fun initConfig() {
-        Utils.init(this)
-        if (!ProcessUtils.isMainProcess()) return
+        if (!isMainProcess()) return
         Timber.plant(Timber.DebugTree())
-        if (SmartCodeApp.DEBUG) {
-            ARouter.openLog() // 打印日志
-            ARouter.openDebug() // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
-        }
-        ARouter.init(this) // 尽可能早,推荐在Application中初始化
         RxJavaPlugins.setErrorHandler {
             Timber.e(it)
         }
