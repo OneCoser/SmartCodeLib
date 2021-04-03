@@ -2,47 +2,52 @@ ext {
     curTime = rootProject.properties["BUILD_TIMESTAMP"] == null ? getCurTime() : rootProject.properties["BUILD_TIMESTAMP"]
     backupPath = "../buildBackup/"
 
-    signing = [keyAlias     : 'SmartCode',
-               keyPassword  : 'SmartCode',
-               storeFile    : '../sign.keystore',
-               storePassword: 'SmartCode']
+    signing = [
+            keyAlias     : 'SmartCode',
+            keyPassword  : 'SmartCode',
+            storeFile    : '../sign.keystore',
+            storePassword: 'SmartCode']
 
-    pgy = ["enable"        : false,
-           apiKey          : "b5d9694646f2be460fd0da6504ebb7cd",
-           appKey          : "3916f63b2763adcc78cf255f6623e636",
-           uploadUrl       : "https://www.pgyer.com/apiv2/app/upload",
-           downloadType    : "2",//2=密码安装，3=邀请安装
-           downloadPassword: "test"
+    pgy = [
+            enable          : false,
+            apiKey          : "b5d9694646f2be460fd0da6504ebb7cd",
+            appKey          : "3916f63b2763adcc78cf255f6623e636",
+            uploadUrl       : "https://www.pgyer.com/apiv2/app/upload",
+            downloadType    : "2",//2=密码安装，3=邀请安装
+            downloadPassword: "test"
     ]
 
-    fir = ["enable"        : false,
-           apiKey   : "c351074668d37ce357a515720753c599",
-           uploadUrl: "http://api.bq04.com/apps",
-           uploadLog: "优化代码"
+    fir = [
+            enable   : false,
+            apiKey   : "c351074668d37ce357a515720753c599",
+            uploadUrl: "http://api.bq04.com/apps",
+            uploadLog: "优化代码"
     ]
 
-    jiagu = [name                : '18510961024',
-             password            : 'only@256688',
-             zipPath             : "../jiagu/360jiagu.zip",
-             unzipPath           : "../jiagu/360jiagubao/",
-             jarPath             : '../jiagu/360jiagubao/jiagu/jiagu.jar',
-             channelConfigPath   : '../jiagu/Channel.txt',
-             jiagubao_mac        : "https://down.360safe.com/360Jiagu/360jiagubao_mac.zip",
-             jiagubao_windows    : "https://down.360safe.com/360Jiagu/360jiagubao_windows_64.zip",
-             jiagubao_linux      : "https://down.360safe.com/360Jiagu/360jiagubao_linux_64.zip",
-             devOutputPath       : "${backupPath}/dev_jiagu/${curTime}/",
-             productionOutputPath: "${backupPath}/production_jiagu/${curTime}/"
+    jiagu = [
+            name                : '18510961024',
+            password            : 'only@256688',
+            zipPath             : "/Users/chenhao/Android/jiagu/360jiagu.zip",
+            unzipPath           : "/Users/chenhao/Android/jiagu/360jiagubao/",
+            jarPath             : '/Users/chenhao/Android/jiagu/360jiagubao/jiagu/jiagu.jar',
+            channelConfigPath   : '/Users/chenhao/Android/jiagu/Channel.txt',
+            jiagubao_mac        : "https://down.360safe.com/360Jiagu/360jiagubao_mac.zip",
+            jiagubao_windows    : "https://down.360safe.com/360Jiagu/360jiagubao_windows_64.zip",
+            jiagubao_linux      : "https://down.360safe.com/360Jiagu/360jiagubao_linux_64.zip",
+            devOutputPath       : "${backupPath}/dev_jiagu/${curTime}/",
+            productionOutputPath: "${backupPath}/production_jiagu/${curTime}/"
     ]
 
-    android = [compileSdkVersion: 29,
-               buildToolsVersion: "30.0.0",
-               minSdkVersion    : 21,
-               targetSdkVersion : 29,
-               versionCode      : 1,
-               versionName      : "1.0.0",
-               appId            : "ch.smart.code.lib",
-               appName          : "SmartCodeLib",
-               outPutApkName    : "SCL-1.0.0.apk"
+    android = [
+            compileSdkVersion: 29,
+            buildToolsVersion: "30.0.0",
+            minSdkVersion    : 21,
+            targetSdkVersion : 29,
+            versionCode      : 1,
+            versionName      : "1.0.0",
+            appId            : "ch.smart.code.lib",
+            appName          : "SmartCodeLib",
+            outPutApkName    : "SCL-1.0.0.apk"
     ]
 }
 

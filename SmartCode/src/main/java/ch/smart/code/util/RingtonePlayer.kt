@@ -5,7 +5,6 @@ import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
 import ch.smart.code.imageloader.isStartsWithHttp
-import ch.smart.code.util.FileCache.isAvailableSpace
 import com.blankj.utilcode.util.Utils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable

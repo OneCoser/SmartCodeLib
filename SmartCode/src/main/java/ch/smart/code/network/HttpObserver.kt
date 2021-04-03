@@ -4,9 +4,15 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.CopyOnWriteArraySet
 
+/**
+ * 类描述：接口请求响应
+ */
 abstract class HttpObserver<T>(protected var showMsg: Boolean = true) : Observer<T> {
+    private var disposable: Disposable? = null
 
-    override fun onSubscribe(d: Disposable) {}
+    override fun onSubscribe(d: Disposable) {
+        disposable = d
+    }
 
     override fun onError(throwable: Throwable) {
         errorHandles.forEach {
@@ -17,7 +23,14 @@ abstract class HttpObserver<T>(protected var showMsg: Boolean = true) : Observer
         DEFAULT_ERROR_HANDLE.errorHandle(throwable, showMsg)
     }
 
-    override fun onComplete() {}
+    override fun onComplete() {
+        disposable()
+    }
+
+    fun disposable() {
+        disposable?.dispose()
+        disposable = null
+    }
 
     companion object {
         private val DEFAULT_ERROR_HANDLE by lazy { DefaultErrorHandle() }

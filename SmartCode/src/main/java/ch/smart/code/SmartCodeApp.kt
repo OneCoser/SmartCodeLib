@@ -7,10 +7,10 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
-import androidx.camera.camera2.Camera2Config
-import androidx.camera.core.CameraXConfig
 import androidx.multidex.MultiDex
 import ch.smart.code.imageloader.FrescoConfig
+import ch.smart.code.mvp.app.AppDelegate
+import ch.smart.code.network.OkHttpFactory
 import ch.smart.code.util.*
 import com.alibaba.android.arouter.launcher.ARouter
 import com.blankj.utilcode.util.ProcessUtils
@@ -18,14 +18,8 @@ import com.blankj.utilcode.util.Utils
 import com.getkeepsafe.relinker.ReLinker
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.fresco.FrescoImageLoader
-import com.jess.arms.base.App
-import com.jess.arms.base.delegate.AppDelegate
-import com.jess.arms.base.delegate.AppLifecycles
-import com.jess.arms.di.component.AppComponent
-import com.jess.arms.utils.Preconditions
 import com.luck.picture.lib.app.IApp
 import com.luck.picture.lib.app.PictureAppMaster
-import com.luck.picture.lib.crash.PictureSelectorCrashUtils
 import com.luck.picture.lib.engine.PictureSelectorEngine
 import com.scwang.smartrefresh.header.MaterialHeader
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -38,23 +32,34 @@ import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.unit.Subunits
 import me.jessyan.autosize.utils.ScreenUtils
-import me.jessyan.retrofiturlmanager.RetrofitUrlManager
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import zlc.season.rxdownload3.RxDownload
 import zlc.season.rxdownload3.core.DownloadConfig
 import zlc.season.rxdownload3.extension.ApkInstallExtension
 import zlc.season.rxdownload3.http.OkHttpClientFactory
-import java.util.concurrent.TimeUnit
 
-open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
+open class SmartCodeApp : Application(), IApp {
 
     companion object {
         @JvmStatic
         var DEBUG: Boolean = false
     }
 
-    private var appDelegate: AppLifecycles? = null
+    private var appDelegate: AppDelegate? = null
+
+    open fun getAppEnvironment(): AppEnvironment {
+        return AppEnvironment.PRODUCTION
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(base)
+        if (appDelegate == null) {
+            appDelegate = AppDelegate(base, getAppEnvironment())
+        }
+        appDelegate?.attachBaseContext(base)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -71,19 +76,6 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         }
     }
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(base)
-        MultiDex.install(base)
-        if (appDelegate == null) {
-            appDelegate = AppDelegate(base)
-        }
-        try {
-            appDelegate?.attachBaseContext(base)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     override fun onTerminate() {
         super.onTerminate()
         try {
@@ -91,18 +83,6 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-    }
-
-    override fun getAppComponent(): AppComponent {
-        Preconditions.checkNotNull<AppLifecycles>(
-            appDelegate, "%s cannot be null",
-            AppDelegate::class.java.name
-        )
-        Preconditions.checkState(
-            appDelegate is App, "%s must be implements %s", appDelegate?.javaClass?.name,
-            App::class.java.name
-        )
-        return (appDelegate as App).appComponent
     }
 
     open fun initConfig() {
@@ -124,18 +104,11 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         initRxDownload()
         initSmartRefresh()
         initPictureSelector()
-        getApiUrls()?.forEach {
-            RetrofitUrlManager.getInstance().putDomain(it.key, it.value)
-        }
     }
 
     open fun getOvertime(): Int {
         //20200101
         return 0
-    }
-
-    open fun getApiUrls(): MutableMap<String, String>? {
-        return null
     }
 
     private fun initFresco() {
@@ -147,7 +120,7 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
         val configBuilder = FrescoConfig.getConfigBuilder(
             this,
             imageDir,
-            getOkHttpBuilder().build()
+            OkHttpFactory.commonHttpClient
         )
         BigImageViewer.initialize(FrescoImageLoader.with(this, configBuilder.build()))
         registerComponentCallbacks(object : ComponentCallbacks2 {
@@ -243,11 +216,7 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
             .addExtension(ApkInstallExtension::class.java) // 添加自动安装扩展
             .setOkHttpClientFacotry(object : OkHttpClientFactory {
                 override fun build(): OkHttpClient {
-                    return getOkHttpBuilder()
-                        .connectTimeout(10, TimeUnit.SECONDS)
-                        .readTimeout(20, TimeUnit.SECONDS)
-                        .writeTimeout(20, TimeUnit.SECONDS)
-                        .build()
+                    return OkHttpFactory.commonHttpClient
                 }
             })
         FileCache.getDownloadDir()?.absolutePath?.let {
@@ -259,9 +228,6 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
 
     private fun initPictureSelector() {
         PictureAppMaster.getInstance().app = this
-        PictureSelectorCrashUtils.init { _, e ->
-            Timber.e(e)
-        }
     }
 
     override fun getAppContext(): Context {
@@ -270,9 +236,5 @@ open class SmartCodeApp : Application(), App, IApp, CameraXConfig.Provider {
 
     override fun getPictureSelectorEngine(): PictureSelectorEngine {
         return PictureSelectorEngineImp()
-    }
-
-    override fun getCameraXConfig(): CameraXConfig {
-        return Camera2Config.defaultConfig()
     }
 }

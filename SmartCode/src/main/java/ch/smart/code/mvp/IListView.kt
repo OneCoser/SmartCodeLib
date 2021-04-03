@@ -1,14 +1,17 @@
-package ch.smart.code.base
+package ch.smart.code.mvp
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import ch.smart.code.util.LayoutManagerFactory
 import ch.smart.code.util.click
 import ch.smart.code.view.UIStatusView
 import com.blankj.utilcode.util.Utils
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
-import ch.smart.code.util.LayoutManagerFactory
 
-interface SCListView : SCBaseView {
+/**
+ * 类描述：列表界面View接口
+ */
+interface IListView : IView {
 
     fun getRecyclerView(): RecyclerView
 
@@ -33,7 +36,7 @@ interface SCListView : SCBaseView {
         val context = getCurContext()
         return if (context != null) {
             UIStatusView.createEmpty(context).apply {
-                this.click{
+                this.click {
                     onEmptyClick()
                 }
             }
@@ -47,7 +50,7 @@ interface SCListView : SCBaseView {
         val context = getCurContext()
         return if (context != null) {
             UIStatusView.createError(context).apply {
-                this.click{
+                this.click {
                     onErrorClick()
                 }
             }

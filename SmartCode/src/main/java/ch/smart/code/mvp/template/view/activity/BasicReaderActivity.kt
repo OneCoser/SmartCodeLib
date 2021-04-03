@@ -1,17 +1,18 @@
-package ch.smart.code.base
+package ch.smart.code.mvp.template.view.activity
 
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import ch.smart.code.R
 import ch.smart.code.imageloader.isStartsWithHttp
+import ch.smart.code.mvp.BaseActivity
+import ch.smart.code.mvp.IPresenter
 import ch.smart.code.util.FileCache
 import ch.smart.code.util.initSetting
 import ch.smart.code.util.showErrorToast
 import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
-import com.jess.arms.mvp.IPresenter
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import ch.smart.code.util.isNotNullOrBlank
@@ -29,12 +30,10 @@ import zlc.season.rxdownload3.core.Succeed
 import java.io.File
 
 /**
- * 类描述：
- * 创建人：chenhao
- * 创建时间：2020/7/23 21:03
+ * 类描述：阅读器
  */
-@Route(path = SCReaderActivity.PATH)
-open class SCReaderActivity : SCBaseActivity<IPresenter>() {
+@Route(path = BasicReaderActivity.PATH)
+open class BasicReaderActivity : BaseActivity<IPresenter>() {
 
     companion object {
         const val PATH = "/SmartCode/activity/sc_reader"
@@ -70,6 +69,10 @@ open class SCReaderActivity : SCBaseActivity<IPresenter>() {
 
     private var readerView: View? = null
     private var download: Disposable? = null
+
+    override fun createPresenter(): IPresenter? {
+        return null
+    }
 
     override fun initView(p0: Bundle?): Int {
         return R.layout.public_activity_reader

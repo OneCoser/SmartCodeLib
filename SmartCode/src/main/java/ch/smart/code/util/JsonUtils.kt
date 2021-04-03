@@ -5,8 +5,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import io.victoralbertos.jolyglot.GsonSpeaker
 import io.victoralbertos.jolyglot.JolyglotGenerics
+import org.json.JSONObject
 import timber.log.Timber
 import java.io.File
+import java.lang.reflect.Type
 
 /**
  * JSON 解析工具包装对象
@@ -42,5 +44,61 @@ fun String?.isJsonValid(): Boolean {
     } catch (e: Exception) {
         Timber.e(e)
         false
+    }
+}
+
+/**
+ * 安全的Json转换
+ */
+fun Any?.toJSONObject(): JSONObject? {
+    val data = this ?: return null
+    return try {
+        when (data) {
+            is JSONObject -> data
+            is String -> JSONObject(data)
+            else -> JSONObject(safeToJson(data) ?: return null)
+        }
+    } catch (e: Exception) {
+        Timber.e(e)
+        null
+    }
+}
+
+/**
+ * 安全的Json转换
+ */
+fun safeToJson(data: Any?): String? {
+    if (data == null) return null
+    return try {
+        json.toJson(data)
+    } catch (e: Exception) {
+        Timber.e(e)
+        null
+    }
+}
+
+/**
+ * 安全的Json转换
+ */
+fun <T> safeFromJson(jsonStr: String?, classOfT: Class<T>): T? {
+    if (jsonStr.isNullOrBlank()) return null
+    return try {
+        json.fromJson(jsonStr, classOfT)
+    } catch (e: Exception) {
+        Timber.e(e)
+        null
+    }
+}
+
+/**
+ * 安全的Json转换
+ */
+fun <T> safeFromJson(jsonStr: String?, type: Type): T? {
+    if (jsonStr.isNullOrBlank()) return null
+    return try {
+        json.fromJson(jsonStr, type)
+    } catch (e: Exception) {
+        Timber.e(e)
+        null
     }
 }

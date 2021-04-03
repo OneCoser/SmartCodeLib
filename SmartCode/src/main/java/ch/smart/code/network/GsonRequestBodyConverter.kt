@@ -1,13 +1,11 @@
 package ch.smart.code.network
 
-import ch.smart.code.SmartCodeApp
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import okio.Buffer
 import retrofit2.Converter
-import timber.log.Timber
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.io.Writer
@@ -20,20 +18,17 @@ internal class GsonRequestBodyConverter<T>(
 
     @Throws(IOException::class)
     override fun convert(value: T): RequestBody {
-        if (SmartCodeApp.DEBUG) {
-            Timber.i("Http：%s", gson.toJson(value))
-        }
         val buffer = Buffer()
         val writer: Writer = OutputStreamWriter(
-            buffer.outputStream(),
-            UTF_8
+                buffer.outputStream(),
+                UTF_8
         )
         val jsonWriter = gson.newJsonWriter(writer)
         adapter.write(jsonWriter, value)
         jsonWriter.close()
         return RequestBody.create(
-            MEDIA_TYPE,
-            buffer.readByteString()
+                MEDIA_TYPE,
+                buffer.readByteString()
         )
     }
 

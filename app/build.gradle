@@ -35,15 +35,6 @@ android {
         }
     }
 
-    lintOptions {
-        abortOnError false
-    }
-
-    dexOptions {
-        preDexLibraries true
-        maxProcessCount 8
-    }
-
     signingConfigs {
         release {
             keyAlias rootProject.ext.signing["keyAlias"]
@@ -51,6 +42,15 @@ android {
             storeFile file(rootProject.ext.signing["storeFile"])
             storePassword(rootProject.ext.signing["storePassword"])
         }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
     }
 
     buildTypes {
@@ -74,6 +74,38 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    androidExtensions {
+        experimental = true
+    }
+
+    //解决  More than one file was found with OS independent path 'META-INF/DEPENDENCIES'
+    packagingOptions {
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/util_release.kotlin_module'
+        exclude 'META-INF/koin-core.kotlin_module'
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/armeabi/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libjcore234.so'
+        pickFirst 'lib/armeabi-v7a/libgnustl_shared.so'
+        pickFirst 'lib/armeabi-v7a/libcrypto.so'
+    }
+
     flavorDimensions "SERVER"
 
     productFlavors {
@@ -91,14 +123,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    androidExtensions {
-        experimental = true
-    }
 }
 
 android.applicationVariants.all { variant ->
@@ -108,14 +132,8 @@ android.applicationVariants.all { variant ->
 }
 
 kapt {
-    useBuildCache = true
-    javacOptions {
-        option("-Xmaxerrs", 500)
-    }
     arguments {
-
         arg("AROUTER_MODULE_NAME", project.getName())
-        arg("AROUTER_GENERATE_DOC", "enable")
     }
 }
 
@@ -124,7 +142,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(':SmartCode')
     kapt 'com.alibaba:arouter-compiler:1.2.2'
-    kapt 'com.google.dagger:dagger-compiler:2.23.2'
 }
 
 apply from: '../sc-task-jiagu.gradle'

@@ -1,4 +1,4 @@
-package ch.smart.code.base
+package ch.smart.code.mvp
 
 import android.app.Activity
 import android.content.Context
@@ -7,9 +7,11 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import ch.smart.code.util.dismissLoading
 import ch.smart.code.util.showToast
-import com.jess.arms.mvp.IView
 
-interface SCBaseView : IView {
+/**
+ * 类描述：View层接口
+ */
+interface IView {
 
     @JvmDefault
     fun getCurContext(): Context? {
@@ -23,7 +25,7 @@ interface SCBaseView : IView {
     }
 
     @JvmDefault
-    override fun showLoading() {
+    fun showLoading() {
         val context = getCurContext()
         if (context != null) {
             ch.smart.code.util.showLoading(context)
@@ -31,12 +33,12 @@ interface SCBaseView : IView {
     }
 
     @JvmDefault
-    override fun hideLoading() {
+    fun hideLoading() {
         dismissLoading()
     }
 
     @JvmDefault
-    override fun showMessage(message: String) {
+    fun showMessage(message: String) {
         showToast(message)
     }
 
@@ -46,7 +48,7 @@ interface SCBaseView : IView {
     }
 
     @JvmDefault
-    override fun killMyself() {
+    fun killMyself() {
         if (this is Activity) {
             this.finish()
         } else if (this is Fragment) {

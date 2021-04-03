@@ -1,81 +1,69 @@
 package ch.smart.code.network
 
-import ch.smart.code.SmartCodeApp
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
 import okhttp3.ResponseBody
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Converter
-import timber.log.Timber
 import java.io.IOException
 import java.io.StringReader
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 internal class GsonResponseBodyConverter<T>(
     private val gson: Gson,
+    private val responseRule: IResponseRule,
     private val adapter: TypeAdapter<T>,
     private val isArray: Boolean,
     private val type: Type
 ) : Converter<ResponseBody, T> {
 
+    @Suppress("TooGenericExceptionThrown")
     @Throws(IOException::class)
     override fun convert(value: ResponseBody): T {
-        var responseStr: String? = null
-        return try {
-            responseStr = value.string()
-            if (SmartCodeApp.DEBUG) {
-                Timber.i("Http：%s", responseStr)
+        try {
+            val responseStr = value.string()
+            if (isResponseType()) {
+                adapter.read(gson.newJsonReader(StringReader(responseStr)))
             }
             val json = JSONObject(responseStr)
-            val code = json.optString(ResponseConfig.CODE_FIELD)
-            if (code == ResponseConfig.SUCCESS_STATUS_CODE) {
-                getT(
-                    when {
-                        json.has(ResponseConfig.DATA_FIELD) -> json.optString(ResponseConfig.DATA_FIELD)
-                        isArray -> "[]"
-                        else -> "{}"
-                    }
-                )
-            } else {
-                throw ApiException(code, json.optString(ResponseConfig.MSG_FIELD))
+            val error = responseRule.isError(json)
+            if (error != null) {
+                throw error
+            }
+            val data = json.optString(responseRule.getDataField())
+            val isNull = data.isNullOrBlank() || data.isNullOrEmpty() || data == "null"
+            return when {
+                isArray && isNull -> adapter.read(gson.newJsonReader(StringReader("[]")))
+                isNull -> when (type) {
+                    String::class.java -> "" as T
+                    Boolean::class.java -> java.lang.Boolean.FALSE as T
+                    Int::class.java -> 0 as T
+                    Long::class.java -> 0L as T
+                    else -> adapter.read(gson.newJsonReader(StringReader("{}")))
+                }
+                type == String::class.java -> data as T
+                else -> adapter.read(gson.newJsonReader(StringReader(data)))
             }
         } catch (e: JSONException) {
-            Timber.e("JSONException json:%s", responseStr)
-            throw RuntimeException(e)
+            throw ApiException(code = "500", msg = String.format("数据解析错误:%s", e.message))
         } finally {
             value.close()
         }
     }
 
-    @Throws(IOException::class)
-    private fun getT(data: String?): T {
-        val isNull = data.isNullOrBlank() || data.isNullOrEmpty() || data == "null"
-        if (isArray && isNull) {
-            return adapter.read(gson.newJsonReader(StringReader("[]")))
+    private fun isResponseType(): Boolean {
+        val checkType = if (type is ParameterizedType) {
+            type.rawType
+        } else {
+            type
         }
-        if (isNull) {
-            when (type) {
-                String::class.java -> {
-                    return "" as T
-                }
-                Boolean::class.java -> {
-                    return java.lang.Boolean.FALSE as T
-                }
-                Int::class.java -> {
-                    return 0 as T
-                }
-                Long::class.java -> {
-                    return 0L as T
-                }
-                else -> {
-                    return Any() as T
-                }
+        GsonConverterFactory.RESPONSE_CLASS.forEach {
+            if (checkType == it) {
+                return true
             }
         }
-        if (type == String::class.java) {
-            return data as T
-        }
-        return adapter.read(gson.newJsonReader(StringReader(data)))
+        return false
     }
 }

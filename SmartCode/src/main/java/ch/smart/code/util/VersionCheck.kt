@@ -2,11 +2,11 @@ package ch.smart.code.util
 
 import ch.smart.code.dialog.VersionAlert
 import ch.smart.code.imageloader.isStartsWithHttp
+import ch.smart.code.network.OkHttpFactory
 import com.blankj.utilcode.util.ActivityUtils
 import com.google.gson.JsonParser
 import io.reactivex.Observable
 import okhttp3.ResponseBody
-import ch.smart.code.util.isNotNullOrBlank
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
 import retrofit2.Call
@@ -43,7 +43,7 @@ class VersionCheck(
 
     private val api by lazy {
         Retrofit.Builder().baseUrl("https://www.pgyer.com/apiv2/app/")
-            .client(getOkHttpBuilder().build())
+            .client(OkHttpFactory.commonHttpClient)
             .build().create(VersionCheck.Api::class.java)
     }
 

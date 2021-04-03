@@ -5,15 +5,12 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Bundle
 import ch.smart.code.adapter.StatusBarAdapter
-import ch.smart.code.base.SCReaderActivity
-import ch.smart.code.base.SCWebActivity
+import ch.smart.code.mvp.template.view.activity.BasicReaderActivity
 import ch.smart.code.dialog.ItemAlert
 import ch.smart.code.network.HttpObserver
 import ch.smart.code.util.*
 import ch.smart.code.util.rx.toIoAndMain
 import com.blankj.utilcode.util.ActivityUtils
-import com.blankj.utilcode.util.Utils
-import com.jess.arms.utils.ArmsUtils
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
@@ -27,7 +24,7 @@ class MainActivity : Activity(), StatusBarAdapter {
                 object : ItemAlert.ItemAlertClickListener {
                     override fun onClick(alert: ItemAlert, itemIndex: Int, itemTag: Any?) {
                         alert.cancel()
-                        SCReaderActivity.open(path = itemTag?.toString())
+                        BasicReaderActivity.open(path = itemTag?.toString())
                     }
                 }
             ).addItem("网页", tag = "https://www.baidu.com")
@@ -39,15 +36,12 @@ class MainActivity : Activity(), StatusBarAdapter {
                 .setCanceledOnTouchOutsideS(true).setCancelableS(true).show()
         }
         testApi.click {
-            ArmsUtils.obtainAppComponentFromContext(Utils.getApp())
-                .repositoryManager()
-                .obtainRetrofitService(ApiService::class.java)
-                .loadList(mapOf("userId" to "2001"))
+            apiService.loadList(mapOf("userId" to "2001"))
                 .toIoAndMain()
                 .doOnSubscribe {
-                    showLoading(ActivityUtils.getTopActivity(), cancelable = false)
+                    showLoading(ActivityUtils.getTopActivity())
                 }
-                .doOnComplete {
+                .doFinally {
                     dismissLoading()
                 }.subscribe(object : HttpObserver<List<String>>() {
                     override fun onNext(t: List<String>) {

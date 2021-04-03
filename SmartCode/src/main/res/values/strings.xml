@@ -12,5 +12,6 @@
     <string name="public_action_success" translatable="false">操作成功!</string>
     <string name="public_action_error" translatable="false">操作失败!</string>
     <string name="public_permission_denied_alert" translatable="false">拒绝%s权限后无法正常使用此功能,若需继续请前往设置打开</string>
+    <string name="public_back_pressed_exit" translatable="false">再按一次退回桌面</string>
     <string name="public_permission_setting" translatable="false">去设置</string>
 </resources>

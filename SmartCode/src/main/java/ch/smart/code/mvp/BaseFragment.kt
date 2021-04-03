@@ -1,64 +1,66 @@
-package ch.smart.code.base
+package ch.smart.code.mvp
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.jess.arms.base.delegate.IFragment
-import com.jess.arms.di.component.AppComponent
-import com.jess.arms.integration.lifecycle.FragmentLifecycleable
-import com.jess.arms.mvp.IPresenter
+import ch.smart.code.mvp.lifecycle.FragmentLifecycleable
 import com.trello.rxlifecycle3.android.FragmentEvent
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.Subject
-import javax.inject.Inject
 
-abstract class SCBaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentLifecycleable {
-    
+/**
+ * 类描述：Fragment基类
+ */
+abstract class BaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentLifecycleable,
+    PageNameable {
+
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
-    
-    //如果当前页面逻辑简单, Presenter 可以为 null
+
     @JvmField
-    @Inject
-    protected var mPresenter: P? = null
-    
+    protected var presenter: P? = this.createPresenter()
+
+    abstract fun createPresenter(): P?
+
     var currentVisible: Boolean? = null
         private set
-    
+
     override fun provideLifecycleSubject(): Subject<FragmentEvent> {
         return lifecycleSubject
     }
-    
-    
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return initView(inflater, container, savedInstanceState)
     }
-    
+
     override fun onResume() {
         super.onResume()
         visibleChanged()
     }
-    
-    
+
     override fun onPause() {
         super.onPause()
         visibleChanged()
     }
-    
+
     override fun onDestroyView() {
         super.onDestroyView()
         visibleChanged()
-        (mPresenter as? SCListPresenter<*, *, *>)?.onDestroyView()
+        (presenter as? ListPresenter<*, *, *>)?.onDestroyView()
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
-        //释放资源
-        mPresenter?.onDestroy()
-        this.mPresenter = null
+        // 释放资源
+        presenter?.onDestroy()
+        presenter = null
     }
-    
+
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         visibleChanged()
@@ -68,7 +70,7 @@ abstract class SCBaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentL
             }
         }
     }
-    
+
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         visibleChanged()
@@ -78,7 +80,7 @@ abstract class SCBaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentL
             }
         }
     }
-    
+
     private fun visibleChanged() {
         val userVisible = getUserVisible()
         if (userVisible == currentVisible) {
@@ -87,25 +89,12 @@ abstract class SCBaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentL
         currentVisible = userVisible
         onVisibleChanged(userVisible)
     }
-    
-    
-    /**
-     * 是否使用 EventBus
-     * Arms 核心库现在并不会依赖某个 EventBus, 要想使用 EventBus, 还请在项目中自行依赖对应的 EventBus
-     * 现在支持两种 EventBus, greenrobot 的 EventBus 和畅销书 《Android源码设计模式解析与实战》的作者 何红辉 所作的 AndroidEventBus
-     * 确保依赖后, 将此方法返回 true, Arms 会自动检测您依赖的 EventBus, 并自动注册
-     * 这种做法可以让使用者有自行选择三方库的权利, 并且还可以减轻 Arms 的体积
-     *
-     * @return 返回 {@code true} (默认为使用 {@code true}), Arms 会自动注册 EventBus
-     */
+
     override fun useEventBus(): Boolean {
         return true
     }
-    
-    
-    override fun setupFragmentComponent(appComponent: AppComponent) {
-    }
-    
+
+
     /**
      * 当前 Fragment 是否能被用户看见
      *
@@ -119,11 +108,15 @@ abstract class SCBaseFragment<P : IPresenter> : Fragment(), IFragment, FragmentL
      *
      */
     protected open fun onVisibleChanged(isVisibleToUser: Boolean) {}
-    
-    
-    override fun setData(data: Any?) {
+
+    override fun getPageName(): String {
+        return this.javaClass.simpleName
     }
-    
+
+    override fun getPagePath(): String {
+        val act = activity
+        return if (act is PageNameable) "${act.getPageName()}-${getPageName()}" else getPageName()
+    }
 }
 
 /**

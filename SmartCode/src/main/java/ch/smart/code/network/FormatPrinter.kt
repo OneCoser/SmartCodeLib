@@ -1,18 +1,18 @@
-package ch.smart.code.util
+package ch.smart.code.network
 
 import android.text.TextUtils
-import com.jess.arms.http.log.FormatPrinter
-import com.jess.arms.http.log.RequestInterceptor
-import com.jess.arms.utils.CharacterHandler
-import com.jess.arms.utils.LogUtils
+import android.util.Log
 import okhttp3.MediaType
 import okhttp3.Request
 
-class SCPrinter : FormatPrinter {
+/**
+ * 类描述：网络请求信息打印
+ */
+class FormatPrinter {
 
     companion object {
 
-        private const val TAG = "SCHttp"
+        private const val TAG = "SQHttpLog"
         private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
         private val DOUBLE_SEPARATOR = LINE_SEPARATOR + LINE_SEPARATOR
 
@@ -39,7 +39,6 @@ class SCPrinter : FormatPrinter {
         private const val DEFAULT_LINE = "│ "
     }
 
-
     private fun isEmpty(line: String): Boolean {
         return TextUtils.isEmpty(line) || N == line || T == line || TextUtils.isEmpty(line.trim { it <= ' ' })
     }
@@ -50,11 +49,11 @@ class SCPrinter : FormatPrinter {
      * @param request
      * @param bodyString
      */
-    override fun printJsonRequest(request: Request, bodyString: String) {
+    fun printJsonRequest(request: Request, bodyString: String) {
         val requestBody = LINE_SEPARATOR + BODY_TAG + LINE_SEPARATOR + bodyString
         val tag = getTag(true)
 
-        LogUtils.debugInfo(tag, REQUEST_UP_LINE)
+        Log.d(tag, REQUEST_UP_LINE)
         logLines(tag, arrayOf(URL_TAG + request.url()), false)
         logLines(tag, getRequest(request), true)
         logLines(
@@ -62,7 +61,7 @@ class SCPrinter : FormatPrinter {
             requestBody.split(LINE_SEPARATOR.toRegex()).filter { it.isNotBlank() }.toTypedArray(),
             true
         )
-        LogUtils.debugInfo(tag, END_LINE)
+        Log.d(tag, END_LINE)
     }
 
     /**
@@ -70,30 +69,30 @@ class SCPrinter : FormatPrinter {
      *
      * @param request
      */
-    override fun printFileRequest(request: Request) {
+    fun printFileRequest(request: Request) {
         val tag = getTag(true)
 
-        LogUtils.debugInfo(tag, REQUEST_UP_LINE)
+        Log.d(tag, REQUEST_UP_LINE)
         logLines(tag, arrayOf(URL_TAG + request.url()), false)
         logLines(tag, getRequest(request), true)
         logLines(tag, OMITTED_REQUEST, true)
-        LogUtils.debugInfo(tag, END_LINE)
+        Log.d(tag, END_LINE)
     }
 
     /**
      * 打印网络响应信息, 当网络响应时 {[okhttp3.ResponseBody]} 可以解析的情况
      *
-     * @param chainMs      服务器响应耗时(单位毫秒)
+     * @param chainMs 服务器响应耗时(单位毫秒)
      * @param isSuccessful 请求是否成功
-     * @param code         响应码
-     * @param headers      请求头
-     * @param contentType  服务器返回数据的数据类型
-     * @param bodyString   服务器返回的数据(已解析)
-     * @param segments     域名后面的资源地址
-     * @param message      响应信息
-     * @param responseUrl  请求地址
+     * @param code 响应码
+     * @param headers 请求头
+     * @param contentType 服务器返回数据的数据类型
+     * @param bodyString 服务器返回的数据(已解析)
+     * @param segments 域名后面的资源地址
+     * @param message 响应信息
+     * @param responseUrl 请求地址
      */
-    override fun printJsonResponse(
+    fun printJsonResponse(
         chainMs: Long,
         isSuccessful: Boolean,
         code: Int,
@@ -105,8 +104,8 @@ class SCPrinter : FormatPrinter {
         responseUrl: String
     ) {
         val bodyString = when {
-            RequestInterceptor.isJson(contentType) -> CharacterHandler.jsonFormat(bodyStr)
-            RequestInterceptor.isXml(contentType) -> CharacterHandler.xmlFormat(bodyStr)
+            RequestUtils.isJson(contentType) -> RequestUtils.jsonFormat(bodyStr)
+            RequestUtils.isXml(contentType) -> RequestUtils.xmlFormat(bodyStr)
             else -> bodyStr
         }
 
@@ -114,7 +113,7 @@ class SCPrinter : FormatPrinter {
         val tag = getTag(false)
         val urlLine = arrayOf(URL_TAG + responseUrl, N)
 
-        LogUtils.debugInfo(tag, RESPONSE_UP_LINE)
+        Log.d(tag, RESPONSE_UP_LINE)
         logLines(tag, urlLine, true)
         logLines(tag, getResponse(headers, chainMs, code, isSuccessful, segments, message), true)
         logLines(
@@ -122,34 +121,38 @@ class SCPrinter : FormatPrinter {
             responseBody.split(LINE_SEPARATOR.toRegex()).filter { it.isNotBlank() }.toTypedArray(),
             false
         )
-        LogUtils.debugInfo(tag, END_LINE)
+        Log.d(tag, END_LINE)
     }
 
     /**
      * 打印网络响应信息, 当网络响应时 {[okhttp3.ResponseBody]} 为 `null` 或不可解析的情况
      *
-     * @param chainMs      服务器响应耗时(单位毫秒)
+     * @param chainMs 服务器响应耗时(单位毫秒)
      * @param isSuccessful 请求是否成功
-     * @param code         响应码
-     * @param headers      请求头
-     * @param segments     域名后面的资源地址
-     * @param message      响应信息
-     * @param responseUrl  请求地址
+     * @param code 响应码
+     * @param headers 请求头
+     * @param segments 域名后面的资源地址
+     * @param message 响应信息
+     * @param responseUrl 请求地址
      */
-    override fun printFileResponse(
-        chainMs: Long, isSuccessful: Boolean, code: Int, headers: String,
-        segments: List<String>, message: String, responseUrl: String
+    fun printFileResponse(
+        chainMs: Long,
+        isSuccessful: Boolean,
+        code: Int,
+        headers: String,
+        segments: List<String>,
+        message: String,
+        responseUrl: String
     ) {
-//        val tag = getTag(false)
-//        val urlLine = arrayOf(URL_TAG + responseUrl, N)
-//
-//        LogUtils.debugInfo(tag, RESPONSE_UP_LINE)
-//        logLines(tag, urlLine, true)
-//        logLines(tag, getResponse(headers, chainMs, code, isSuccessful, segments, message), true)
-//        logLines(tag, OMITTED_RESPONSE, true)
-//        LogUtils.debugInfo(tag, END_LINE)
-    }
+        val tag = getTag(false)
+        val urlLine = arrayOf(URL_TAG + responseUrl, N)
 
+        Log.d(tag, RESPONSE_UP_LINE)
+        logLines(tag, urlLine, true)
+        logLines(tag, getResponse(headers, chainMs, code, isSuccessful, segments, message), true)
+        logLines(tag, OMITTED_RESPONSE, true)
+        Log.d(tag, END_LINE)
+    }
 
     /**
      * 对 `lines` 中的信息进行逐行打印
@@ -166,7 +169,7 @@ class SCPrinter : FormatPrinter {
                 val start = i * MAX_LONG_SIZE
                 var end = (i + 1) * MAX_LONG_SIZE
                 end = if (end > line.length) line.length else end
-                LogUtils.debugInfo(resolveTag(tag), DEFAULT_LINE + line.substring(start, end))
+                Log.d(resolveTag(tag), DEFAULT_LINE + line.substring(start, end))
             }
         }
     }
@@ -180,10 +183,10 @@ class SCPrinter : FormatPrinter {
     private val ARMS = arrayOf("-A-", "-R-", "-M-", "-S-")
 
     private fun computeKey(): String {
-        if (last.get() as Int >= 4) {
+        if ((last.get()?:0) >= 4) {
             last.set(0)
         }
-        val s = ARMS[last.get() as Int]
+        val s = ARMS[(last.get()?:0)]
         last.set(last.get()!! + 1)
         return s
     }
@@ -206,7 +209,6 @@ class SCPrinter : FormatPrinter {
         return computeKey() + tag
     }
 
-
     private fun getRequest(request: Request): Array<String> {
         val log: String
         val header = request.headers().toString()
@@ -216,14 +218,18 @@ class SCPrinter : FormatPrinter {
     }
 
     private fun getResponse(
-        header: String, tookMs: Long, code: Int, isSuccessful: Boolean,
-        segments: List<String>, message: String
+        header: String,
+        tookMs: Long,
+        code: Int,
+        isSuccessful: Boolean,
+        segments: List<String>,
+        message: String
     ): Array<String> {
         val log: String
         val segmentString = slashSegments(segments)
         log =
-            (((if (!TextUtils.isEmpty(segmentString)) "$segmentString - " else "") + "is success : "
-                    + isSuccessful + " - " + RECEIVED_TAG + tookMs + "ms" + DOUBLE_SEPARATOR + STATUS_CODE_TAG +
+            (((if (!TextUtils.isEmpty(segmentString)) "$segmentString - " else "") + "is success : " +
+                    isSuccessful + " - " + RECEIVED_TAG + tookMs + "ms" + DOUBLE_SEPARATOR + STATUS_CODE_TAG +
                     code + " / " + message + DOUBLE_SEPARATOR + (if (isEmpty(header))
                 ""
             else
@@ -269,7 +275,6 @@ class SCPrinter : FormatPrinter {
         }
         return builder.toString()
     }
-
 
     private fun getTag(isRequest: Boolean): String {
         return if (isRequest) {

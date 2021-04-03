@@ -1,6 +1,7 @@
 package ch.smart.code.network
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -8,7 +9,10 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
 
-class GsonConverterFactory private constructor(private val gson: Gson) : Converter.Factory() {
+class GsonConverterFactory private constructor(
+    private val gson: Gson,
+    private val responseRule: IResponseRule
+) : Converter.Factory() {
 
     override fun responseBodyConverter(
         type: Type,
@@ -18,6 +22,7 @@ class GsonConverterFactory private constructor(private val gson: Gson) : Convert
         val typeToken = TypeToken.get(type)
         return GsonResponseBodyConverter(
             gson,
+            responseRule,
             gson.getAdapter(typeToken),
             typeToken.rawType.name == "java.util.List",
             type
@@ -35,11 +40,13 @@ class GsonConverterFactory private constructor(private val gson: Gson) : Convert
 
     companion object {
         @JvmOverloads
-        fun create(gson: Gson? = Gson()): GsonConverterFactory {
-            if (gson == null) {
-                throw NullPointerException("gson == null")
-            }
-            return GsonConverterFactory(gson)
+        fun create(
+            gson: Gson = GsonBuilder().setLenient().create(),
+            responseRule: IResponseRule = CommonResponseRule()
+        ): GsonConverterFactory {
+            return GsonConverterFactory(gson = gson, responseRule = responseRule)
         }
+
+        val RESPONSE_CLASS: ArrayList<Class<*>> by lazy { arrayListOf<Class<*>>() }
     }
 }
