@@ -2,6 +2,8 @@ package ch.smart.code.util
 
 import android.os.Process
 import ch.smart.code.R
+import com.alibaba.android.arouter.facade.Postcard
+import com.alibaba.android.arouter.launcher.ARouter
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.ProcessUtils
 import kotlin.system.exitProcess
@@ -41,4 +43,21 @@ fun exitApp(status: Int = 0) {
     }
     Process.killProcess(Process.myPid())
     exitProcess(status)
+}
+
+/**
+ * 生成路由
+ */
+fun String?.router(): Postcard? {
+    if (this.isNullOrBlank()) return null
+    return ARouter.getInstance().build(this)
+}
+
+/**
+ * 发起路由
+ */
+fun String?.navigation(): Boolean {
+    val router = this.router() ?: return false
+    router.navigation()
+    return true
 }

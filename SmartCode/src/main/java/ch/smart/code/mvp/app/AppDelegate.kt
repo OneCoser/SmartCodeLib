@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import ch.smart.code.util.AppEnvironment
 import ch.smart.code.util.initAppEnvironment
-import ch.smart.code.BuildConfig
+import ch.smart.code.SmartCodeApp
 import ch.smart.code.mvp.lifecycle.AppLifecycle
 import ch.smart.code.mvp.lifecycle.BasicActivityLifecycle
 import com.alibaba.android.arouter.launcher.ARouter
@@ -51,7 +51,7 @@ class AppDelegate(context: Context, private val environment: AppEnvironment) : A
         //MVP最基础的三方SDK优先初始化
         Utils.init(application)
         initAppEnvironment(environment)
-        if (BuildConfig.DEBUG) {
+        if (SmartCodeApp.DEBUG) {
             ARouter.openLog() // 打印日志
 //            ARouter.openDebug() // 开启调试模式(如果在InstantRun模式下运行，必须开启调试模式！线上版本需要关闭,否则有安全风险)
         }

@@ -1,6 +1,6 @@
 package ch.smart.code.network
 
-import ch.smart.code.BuildConfig
+import ch.smart.code.SmartCodeApp
 import io.reactivex.schedulers.Schedulers
 import me.jessyan.retrofiturlmanager.RetrofitUrlManager
 import okhttp3.OkHttpClient
@@ -46,7 +46,7 @@ abstract class BaseApi {
      */
     private val okHttpClient: OkHttpClient by lazy {
         var builder = RetrofitUrlManager.getInstance().with(OkHttpClient.Builder())
-        builder.addInterceptor(BasicInterceptor(provideHttpHandler(), BuildConfig.DEBUG))
+        builder.addInterceptor(BasicInterceptor(provideHttpHandler(), SmartCodeApp.DEBUG))
         builder = setHttpClientBuilder(builder)
         val urls = provideDomainAndUrl()
         if (!urls.isNullOrEmpty()) {
