@@ -122,7 +122,9 @@ object FileCache {
     }
 
     fun getMMKVDir(): File? {
-        return getRootDir(MMKV)
+        val file = File(Utils.getApp().filesDir, MMKV)
+        file.mkdirs()
+        return file
     }
 
     fun getSuffix(path: String, defSuffix: String? = null): String? {

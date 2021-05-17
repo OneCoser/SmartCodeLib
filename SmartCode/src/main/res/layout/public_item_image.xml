@@ -1,0 +1,10 @@
+<ch.smart.code.imageloader.SCImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    app:actualImageScaleType="fitCenter"
+    app:failureImage="@drawable/public_error_img"
+    app:failureImageScaleType="fitCenter"
+    app:placeholderImage="@android:color/transparent"
+    app:placeholderImageScaleType="fitCenter" />

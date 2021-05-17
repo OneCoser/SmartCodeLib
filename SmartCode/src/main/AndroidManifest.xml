@@ -48,5 +48,9 @@
             android:name="ch.smart.code.mvp.template.view.activity.BasicReaderActivity"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name="ch.smart.code.mvp.template.view.activity.BasicImagesActivity"
+            android:screenOrientation="portrait" />
+
     </application>
 </manifest>
