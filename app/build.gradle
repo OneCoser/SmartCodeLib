@@ -141,7 +141,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(':SmartCode')
-    kapt 'com.alibaba:arouter-compiler:1.5.1'
+    kapt 'com.alibaba:arouter-compiler:1.2.2'
 }
 
 apply from: '../sc-task-jiagu.gradle'
