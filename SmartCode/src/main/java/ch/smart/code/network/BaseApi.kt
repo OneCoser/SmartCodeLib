@@ -12,6 +12,10 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
  */
 abstract class BaseApi {
 
+    companion object{
+
+    }
+
     fun <T> getApi(
         serviceClass: Class<T>,
         baseUrl: String = "https://api.github.com",

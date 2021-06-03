@@ -6,6 +6,9 @@ import android.net.Uri
 import androidx.core.content.ContextCompat
 import com.blankj.utilcode.constant.MemoryConstants
 import com.blankj.utilcode.util.Utils
+import okhttp3.Request
+import okhttp3.Response
+import okio.Buffer
 import timber.log.Timber
 import java.io.File
 import java.math.BigDecimal
@@ -254,4 +257,29 @@ fun Uri.replaceKeyValue(key: String, action: (oldValue: String?) -> String?): Ur
     }
     params[key] = newValue ?: ""
     return this.replaceParams(params)
+}
+
+
+fun Request?.bodyToString(defaultStr: String? = null): String? {
+    return try {
+        val body = this?.body() ?: return defaultStr
+        val buffer = Buffer()
+        body.writeTo(buffer)
+        buffer.readUtf8()
+    } catch (e: Exception) {
+        Timber.e(e)
+        defaultStr
+    }
+}
+
+fun Response?.bodyToString(defaultStr: String? = null): String? {
+    return try {
+        val source = this?.body()?.source() ?: return defaultStr
+        source.request(Long.MAX_VALUE)
+        val buffer = source.buffer.clone()
+        buffer.readUtf8()
+    } catch (e: Exception) {
+        Timber.e(e)
+        defaultStr
+    }
 }
