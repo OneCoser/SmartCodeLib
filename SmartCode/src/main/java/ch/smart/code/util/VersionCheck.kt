@@ -24,7 +24,8 @@ class VersionCheck(
     private val appKey: String,
     private val nowVersionCode: Int,
     private val nowVersionName: String,
-    private val buildVersionNum: Int = 0
+    private val buildVersionNum: Int = 0,
+    private val needForceUpdate: Boolean = false
 ) {
 
     interface Api {
@@ -53,7 +54,6 @@ class VersionCheck(
      * buildBuildVersion	Integer	蒲公英生成的用于区分历史版本的build号
      * forceUpdateVersion	String	强制更新版本号（未设置强置更新默认为空）
      * forceUpdateVersionNo	String	强制更新的版本编号
-     * needForceUpdate	Boolean	是否强制更新
      * downloadURL	String	应用安装地址
      * buildHaveNewVersion	Boolean	是否有新版本
      * buildVersionNo	String	上传包的版本编号，默认为1 (即编译的版本号，一般来说，编译一次会变动一次这个版本号, 在 Android 上叫 Version Code。对于 iOS 来说，是字符串类型；对于 Android 来说是一个整数。例如：1001，28等。)
@@ -96,7 +96,7 @@ class VersionCheck(
                                         map["name"] = data.get("buildVersion")?.asString ?: ""
                                         map["desc"] =
                                             data.get("buildUpdateDescription")?.asString ?: ""
-                                        if (data.get("needForceUpdate")?.asBoolean == true) {
+                                        if (needForceUpdate || versionNo - nowVersionCode > 1) {
                                             map["force"] = "true"
                                         }
                                     }
