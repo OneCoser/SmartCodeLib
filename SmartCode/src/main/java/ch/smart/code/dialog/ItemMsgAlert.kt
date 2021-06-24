@@ -17,7 +17,11 @@ import ch.smart.code.util.LayoutManagerFactory
 import ch.smart.code.util.isNotNullOrBlank
 import ch.smart.code.util.pt
 
-open class ItemMsgAlert(context: Context) : BaseAlert(context) {
+open class ItemMsgAlert(
+    context: Context,
+    private val showCount: Int = 5,
+    private val itemHeight: Int = 44.pt
+) : BaseAlert(context) {
 
     interface ItemMsgAlertClickListener {
         fun onClick(alert: ItemMsgAlert, itemIndex: Int, itemTag: Any?)
@@ -150,7 +154,7 @@ open class ItemMsgAlert(context: Context) : BaseAlert(context) {
 
     override fun show() {
         alertItemsV?.layoutParams?.let {
-            it.height = ((if (itemList.size > 4) 4 else itemList.size) * 44f).pt
+            it.height = (if (itemList.size > showCount) showCount else itemList.size) * itemHeight
             alertItemsV?.layoutParams = it
         }
         alertItemsV?.adapter = object : CommonRcvAdapter<ItemMsgAlertData>(itemList) {
@@ -184,7 +188,7 @@ open class ItemMsgAlert(context: Context) : BaseAlert(context) {
             super.setViews()
             nameV = rootView.findViewById(R.id.alert_item_data_name)
             rootView.layoutParams =
-                RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, 44.pt)
+                RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, itemHeight)
             rootView.click {
                 itemListener?.onClick(
                     this@ItemMsgAlert,

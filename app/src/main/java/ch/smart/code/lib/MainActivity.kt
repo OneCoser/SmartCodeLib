@@ -19,15 +19,14 @@ class MainActivity : Activity(), StatusBarAdapter {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         testReader.click {
-            ItemAlert(
-                this,
-                object : ItemAlert.ItemAlertClickListener {
+            ItemAlert(this)
+                .setListener(object : ItemAlert.ItemAlertClickListener {
                     override fun onClick(alert: ItemAlert, itemIndex: Int, itemTag: Any?) {
                         alert.cancel()
                         BasicReaderActivity.open(path = itemTag?.toString())
                     }
-                }
-            ).addItem("网页", tag = "https://www.baidu.com")
+                })
+                .addItem("网页", tag = "https://www.baidu.com")
                 .addItem(
                     "文件",
                     tag = "http://center.voniu.com/api/m/v1/file/get?path=reportpdf/6bbccd16-9ad9-4d5d-8fc5-b880fdd59120.pdf&token=164e6594-7492-45d9-902e-1873aa9f9d65"

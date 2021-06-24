@@ -9,7 +9,7 @@ interface BaseAlertInterface {
 
     fun getLayoutId(): Int
 
-    fun initView(rooView: View)
+    fun initView(rootView: View)
 
     /**
      * 弹框显示位置
