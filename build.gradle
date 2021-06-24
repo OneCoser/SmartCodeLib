@@ -2,13 +2,15 @@
 apply from: 'sc-task-config.gradle'
 
 buildscript {
-    ext.kotlin_version = "1.5.0"
+    ext.kotlin_version = "1.5.10"
     repositories {
-        jcenter()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url "http://dl.bintray.com/piasy/maven" }
+        maven { url 'https://repo1.maven.org/maven2/' }
+        maven { url 'https://jitpack.io' }
         mavenCentral()
         google()
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -20,14 +22,13 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url "http://dl.bintray.com/piasy/maven" }
-        maven { url 'https://dl.bintray.com/linkedme2016/lkme-deeplinks' }
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url "http://dl.bintray.com/piasy/maven" }
+        maven { url 'https://repo1.maven.org/maven2/' }
         maven { url 'https://jitpack.io' }
-        jcenter()
         mavenCentral()
         google()
-        maven { url "https://maven.google.com" }
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
