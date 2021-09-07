@@ -8,6 +8,8 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.listener.OnResultCallbackListener
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * 类描述：媒体文件选择
@@ -21,19 +23,17 @@ fun openImageSelect(
     minCount: Int = 1,
     needCrop: Boolean = false
 ) {
-    val safeMaxCount = if (maxCount < minCount) minCount else maxCount
-    val selector = PictureSelector.create(activity).openGallery(PictureMimeType.ofImage())
+    val selector = PictureSelector.create(activity)
+        .openGallery(PictureMimeType.ofImage())
         .imageEngine(GlideImageEngine.getInstance())
-    if (safeMaxCount > 1) {
-        selector.selectionMode(PictureConfig.MULTIPLE)
-            .maxSelectNum(safeMaxCount).minSelectNum(minCount)
-    } else {
-        selector.selectionMode(PictureConfig.SINGLE)
-    }.theme(R.style.picture_default_style).isWeChatStyle(true)
-        .isUseCustomCamera(false)//不使用自定义相机，否则需要导入androidxCamera
-        .isPageStrategy(true).isMaxSelectEnabledMask(true).imageSpanCount(4)
-        .isReturnEmpty(false)
+        .theme(R.style.picture_default_style)
+        .isWeChatStyle(true)
         .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        .isUseCustomCamera(false)//不使用自定义相机，否则需要导入androidxCamera
+        .isPageStrategy(true)
+        .isMaxSelectEnabledMask(true)
+        .imageSpanCount(4)
+        .isReturnEmpty(false)
         .isSingleDirectReturn(true)
         .isPreviewImage(true)
         .isCamera(true)
@@ -41,18 +41,28 @@ fun openImageSelect(
         .isCompress(true)
         .isOriginalImageControl(true)
         .isGif(false)
-        .forResult(listener)
+    if (maxCount > 1) {
+        selector.selectionMode(PictureConfig.MULTIPLE)
+            .maxSelectNum(max(maxCount, minCount))
+            .minSelectNum(min(maxCount, max(minCount, 1)))
+    } else {
+        selector.selectionMode(PictureConfig.SINGLE)
+    }.forResult(listener)
 }
 
 fun LocalMedia?.checkGetPath(): String? {
-    if (this?.compressPath.isNotNullOrBlank()) {
-        return this?.compressPath
+    if (this == null) return null
+    if (this.isOriginal && this.originalPath.isNotNullOrBlank()) {
+        return this.originalPath
     }
-    if (this?.androidQToPath.isNotNullOrBlank()) {
-        return this?.androidQToPath
+    if (this.isCut && this.cutPath.isNotNullOrBlank()) {
+        return this.cutPath
     }
-    if (this?.realPath.isNotNullOrBlank()) {
-        return this?.realPath
+    if (this.isCompressed && this.compressPath.isNotNullOrBlank()) {
+        return this.compressPath
+    }
+    if (this.realPath.isNotNullOrBlank()) {
+        return this.realPath
     }
     return null
 }
@@ -75,22 +85,29 @@ fun openVideoSelect(
     maxCount: Int = 9,
     minCount: Int = 1
 ) {
-    val safeMaxCount = if (maxCount < minCount) minCount else maxCount
-    val selector = PictureSelector.create(activity).openGallery(PictureMimeType.ofVideo())
+    val selector = PictureSelector.create(activity)
+        .openGallery(PictureMimeType.ofVideo())
         .imageEngine(GlideImageEngine.getInstance())
-    if (safeMaxCount > 1) {
+        .theme(R.style.picture_default_style)
+        .isWeChatStyle(true)
+        .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        .isUseCustomCamera(false)//不使用自定义相机，否则需要导入androidxCamera
+        .isPageStrategy(true)
+        .isMaxSelectEnabledMask(true)
+        .imageSpanCount(4)
+        .isReturnEmpty(false)
+        .isSingleDirectReturn(true)
+        .isPreviewVideo(true)
+        .isCamera(true)
+    if (maxCount > 1) {
         selector.selectionMode(PictureConfig.MULTIPLE)
-            .maxVideoSelectNum(safeMaxCount).minVideoSelectNum(minCount)
+            .maxSelectNum(max(maxCount, minCount))
+            .minSelectNum(min(maxCount, max(minCount, 1)))
+            .maxVideoSelectNum(max(maxCount, minCount))
+            .maxVideoSelectNum(min(maxCount, max(minCount, 1)))
     } else {
         selector.selectionMode(PictureConfig.SINGLE)
-    }.theme(R.style.picture_default_style).isWeChatStyle(true)
-        .isUseCustomCamera(false)//不使用自定义相机，否则需要导入androidxCamera
-        .isPageStrategy(true).isMaxSelectEnabledMask(true).imageSpanCount(4)
-        .isReturnEmpty(false)
-        .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-        .isSingleDirectReturn(true)
-        .isPreviewVideo(true).isCamera(true)
-        .forResult(listener)
+    }.forResult(listener)
 }
 
 @JvmOverloads
@@ -101,18 +118,15 @@ fun openCamera(
     needCrop: Boolean = false
 ) {
     PictureSelector.create(activity)
-        .openCamera(
-            if (isImage) {
-                PictureMimeType.ofImage()
-            } else {
-                PictureMimeType.ofVideo()
-            }
-        )
+        .openCamera(if (isImage) PictureMimeType.ofImage() else PictureMimeType.ofVideo())
         .imageEngine(GlideImageEngine.getInstance())
-        .theme(R.style.picture_default_style).isWeChatStyle(true)
+        .theme(R.style.picture_default_style)
+        .isWeChatStyle(true)
+        .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         .isUseCustomCamera(false)//不使用自定义相机，否则需要导入androidxCamera
-        .isReturnEmpty(false).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-        .isPreviewImage(true).isEnableCrop(needCrop)
+        .isReturnEmpty(false)
+        .isPreviewImage(true)
+        .isEnableCrop(needCrop)
         .isPreviewVideo(true)
         .isCompress(true)
         .forResult(listener)

@@ -11,10 +11,24 @@ import ch.smart.code.network.HttpObserver
 import ch.smart.code.util.*
 import ch.smart.code.util.rx.toIoAndMain
 import com.blankj.utilcode.util.ActivityUtils
+import com.luck.picture.lib.entity.LocalMedia
+import com.luck.picture.lib.listener.OnResultCallbackListener
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
 class MainActivity : Activity(), StatusBarAdapter {
+    private val selectListener by lazy {
+        object : OnResultCallbackListener<LocalMedia> {
+            override fun onResult(result: MutableList<LocalMedia>?) {
+                Timber.i("选择结果：%s", safeToJson(result))
+            }
+
+            override fun onCancel() {
+                showToast("取消选择")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -50,6 +64,12 @@ class MainActivity : Activity(), StatusBarAdapter {
         }
         testRing.click {
             RingtonePlayer(repeat = false).start(type = RingtoneManager.TYPE_NOTIFICATION)
+        }
+        testSelectImage.click {
+            openImageSelect(this, selectListener)
+        }
+        testSelectVideo.click {
+            openVideoSelect(this, selectListener)
         }
         requestForStartup(this) {
             Timber.i("初始化权限成功")

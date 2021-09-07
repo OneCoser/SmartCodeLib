@@ -2,8 +2,9 @@ package ch.smart.code.network
 
 import com.google.gson.Gson
 import com.google.gson.TypeAdapter
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okio.Buffer
 import retrofit2.Converter
 import java.io.IOException
@@ -26,14 +27,11 @@ internal class GsonRequestBodyConverter<T>(
         val jsonWriter = gson.newJsonWriter(writer)
         adapter.write(jsonWriter, value)
         jsonWriter.close()
-        return RequestBody.create(
-                MEDIA_TYPE,
-                buffer.readByteString()
-        )
+        return buffer.readByteString().toRequestBody(MEDIA_TYPE)
     }
 
     companion object {
         private val UTF_8 = Charset.forName("UTF-8")
-        private val MEDIA_TYPE = MediaType.parse("application/json; charset=UTF-8")
+        private val MEDIA_TYPE = "application/json; charset=UTF-8".toMediaTypeOrNull()
     }
 }

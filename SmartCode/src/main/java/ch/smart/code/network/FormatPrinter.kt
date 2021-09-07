@@ -54,7 +54,7 @@ class FormatPrinter {
         val tag = getTag(true)
 
         Log.d(tag, REQUEST_UP_LINE)
-        logLines(tag, arrayOf(URL_TAG + request.url()), false)
+        logLines(tag, arrayOf(URL_TAG + request.url), false)
         logLines(tag, getRequest(request), true)
         logLines(
             tag,
@@ -73,7 +73,7 @@ class FormatPrinter {
         val tag = getTag(true)
 
         Log.d(tag, REQUEST_UP_LINE)
-        logLines(tag, arrayOf(URL_TAG + request.url()), false)
+        logLines(tag, arrayOf(URL_TAG + request.url), false)
         logLines(tag, getRequest(request), true)
         logLines(tag, OMITTED_REQUEST, true)
         Log.d(tag, END_LINE)
@@ -211,8 +211,8 @@ class FormatPrinter {
 
     private fun getRequest(request: Request): Array<String> {
         val log: String
-        val header = request.headers().toString()
-        log = METHOD_TAG + request.method() + DOUBLE_SEPARATOR +
+        val header = request.headers.toString()
+        log = METHOD_TAG + request.method + DOUBLE_SEPARATOR +
                 if (isEmpty(header)) "" else HEADERS_TAG + LINE_SEPARATOR + dotHeaders(header)
         return log.split(LINE_SEPARATOR.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     }

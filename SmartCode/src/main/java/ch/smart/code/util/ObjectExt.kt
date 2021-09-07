@@ -262,7 +262,7 @@ fun Uri.replaceKeyValue(key: String, action: (oldValue: String?) -> String?): Ur
 
 fun Request?.bodyToString(defaultStr: String? = null): String? {
     return try {
-        val body = this?.body() ?: return defaultStr
+        val body = this?.body ?: return defaultStr
         val buffer = Buffer()
         body.writeTo(buffer)
         buffer.readUtf8()
@@ -274,7 +274,7 @@ fun Request?.bodyToString(defaultStr: String? = null): String? {
 
 fun Response?.bodyToString(defaultStr: String? = null): String? {
     return try {
-        val source = this?.body()?.source() ?: return defaultStr
+        val source = this?.body?.source() ?: return defaultStr
         source.request(Long.MAX_VALUE)
         val buffer = source.buffer.clone()
         buffer.readUtf8()

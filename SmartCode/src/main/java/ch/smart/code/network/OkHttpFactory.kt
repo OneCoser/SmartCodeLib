@@ -48,7 +48,7 @@ object OkHttpFactory {
         if (isProduction()) {
             builder.proxy(Proxy.NO_PROXY)
         }
-        return builder.dispatcher(commonHttpClient.dispatcher())
-            .connectionPool(commonHttpClient.connectionPool())
+        return builder.dispatcher(commonHttpClient.dispatcher)
+            .connectionPool(commonHttpClient.connectionPool)
     }
 }

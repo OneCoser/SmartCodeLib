@@ -30,7 +30,7 @@ class BasicInterceptor(
             if (printer == null) {
                 printer = FormatPrinter()
             }
-            val rcType = copyRequest.body()?.contentType()
+            val rcType = copyRequest.body?.contentType()
             if (rcType != null && RequestUtils.isParseable(rcType)) {
                 printer?.printJsonRequest(copyRequest, RequestUtils.parseParams(copyRequest))
             } else {
@@ -46,7 +46,7 @@ class BasicInterceptor(
                 val originalKey =
                     String.format(
                         "%s?%s",
-                        copyRequest.url().toString(),
+                        copyRequest.url.toString(),
                         copyRequest.bodyToString()
                     )
                 val md5Key = EncryptUtils.encryptMD5ToString(originalKey)
@@ -93,7 +93,7 @@ class BasicInterceptor(
 
         //将请求结果转换成String
         val copyResponse = originalResponse.newBuilder().build()
-        val rcType = copyResponse.body()?.contentType()
+        val rcType = copyResponse.body?.contentType()
         val isParseable = rcType != null && RequestUtils.isParseable(rcType)
         val bodyString =
             if (isParseable) copyResponse.bodyToString(defaultStr = "{\"error\": \"数据解析错误\"}") else null
@@ -108,12 +108,12 @@ class BasicInterceptor(
         //打印响应
         if (openLog) {
             val time = TimeUnit.NANOSECONDS.toMillis(stopTime - startTime)
-            val segmentList = request.url().encodedPathSegments()
-            val header = copyResponse.headers().toString()
-            val code = copyResponse.code()
+            val segmentList = request.url.encodedPathSegments
+            val header = copyResponse.headers.toString()
+            val code = copyResponse.code
             val isSuccessful = copyResponse.isSuccessful
-            val message = copyResponse.message()
-            val url = copyResponse.request().url().toString()
+            val message = copyResponse.message
+            val url = copyResponse.request.url.toString()
             if (isParseable) {
                 printer?.printJsonResponse(
                     time,

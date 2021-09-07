@@ -51,4 +51,32 @@
         app:qmui_backgroundColor="@color/public_white"
         app:qmui_isRadiusAdjustBounds="true" />
 
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/testSelectImage"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/public_pt_40"
+        android:layout_marginTop="@dimen/public_pt_10"
+        android:gravity="center"
+        android:paddingStart="@dimen/public_pt_15"
+        android:paddingEnd="@dimen/public_pt_15"
+        android:text="选图片"
+        android:textColor="@color/public_colorPrimary"
+        android:textSize="@dimen/public_font_16pt"
+        app:qmui_backgroundColor="@color/public_white"
+        app:qmui_isRadiusAdjustBounds="true" />
+
+    <com.qmuiteam.qmui.widget.roundwidget.QMUIRoundButton
+        android:id="@+id/testSelectVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/public_pt_40"
+        android:layout_marginTop="@dimen/public_pt_10"
+        android:gravity="center"
+        android:paddingStart="@dimen/public_pt_15"
+        android:paddingEnd="@dimen/public_pt_15"
+        android:text="选视频"
+        android:textColor="@color/public_colorPrimary"
+        android:textSize="@dimen/public_font_16pt"
+        app:qmui_backgroundColor="@color/public_white"
+        app:qmui_isRadiusAdjustBounds="true" />
+
 </LinearLayout>

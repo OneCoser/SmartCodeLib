@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
+import androidx.camera.camera2.Camera2Config
+import androidx.camera.core.CameraXConfig
 import androidx.multidex.MultiDex
 import ch.smart.code.imageloader.FrescoConfig
 import ch.smart.code.mvp.app.AppDelegate
@@ -36,7 +38,7 @@ import zlc.season.rxdownload3.core.DownloadConfig
 import zlc.season.rxdownload3.extension.ApkInstallExtension
 import zlc.season.rxdownload3.http.OkHttpClientFactory
 
-open class SmartCodeApp : Application(), IApp {
+open class SmartCodeApp : Application(), IApp , CameraXConfig.Provider{
 
     companion object {
         @JvmStatic
@@ -227,5 +229,9 @@ open class SmartCodeApp : Application(), IApp {
 
     override fun getPictureSelectorEngine(): PictureSelectorEngine {
         return PictureSelectorEngineImp()
+    }
+
+    override fun getCameraXConfig(): CameraXConfig {
+        return Camera2Config.defaultConfig()
     }
 }

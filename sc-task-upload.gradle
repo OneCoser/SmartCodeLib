@@ -1,12 +1,12 @@
 import groovy.json.JsonSlurper
 
-private def uploadPGY(String filePath, String buildChannelShortcut) {
+private def uploadPGY(String filePath, String apiKey, String buildChannelShortcut) {
     println "uploadPGY filePath：" + filePath
 
     def stdout = new ByteArrayOutputStream()
     exec {
         executable = 'curl'
-        args = ['-F', "file=@${filePath}", '-F', "_api_key=${rootProject.ext.pgy["apiKey"]}",
+        args = ['-F', "file=@${filePath}", '-F', "_api_key=${apiKey}",
                 '-F', "buildInstallType=${rootProject.ext.pgy["downloadType"]}",
                 '-F', "buildPassword=${rootProject.ext.pgy["downloadPassword"]}",
                 '-F', "buildChannelShortcut=${buildChannelShortcut}",
@@ -20,9 +20,10 @@ private def uploadPGY(String filePath, String buildChannelShortcut) {
     println dataJson.data.buildQRCodeURL
     println "buildVersion: " + dataJson.data.buildVersion
     println "buildVersionNo: " + dataJson.data.buildVersionNo
+    println "buildShortcutUrl: " + dataJson.data.buildShortcutUrl
 }
 
-private def uploadFIR(String filePath) {
+private def uploadFIR(String filePath, String apiKey) {
     println "uploadFIR filePath：" + filePath
 
     def stdout = new ByteArrayOutputStream()
@@ -30,7 +31,7 @@ private def uploadFIR(String filePath) {
         executable = 'curl'
         args = ['-X', 'POST', rootProject.ext.fir["uploadUrl"],
                 '-H', 'Content-Type: application/json',
-                '-d', "{\"type\":\"android\", \"bundle_id\":\"${rootProject.ext.android["appId"]}\", \"api_token\":\"${rootProject.ext.fir["apiKey"]}\"}"
+                '-d', "{\"type\":\"android\", \"bundle_id\":\"${rootProject.ext.android["appId"]}\", \"api_token\":\"${apiKey}\"}"
         ]
         standardOutput = stdout
     }
@@ -59,11 +60,11 @@ private def uploadFIRFile(String filePath, String key, String token, String uplo
     println stdout.toString()
 }
 
-private def upload(String filePath) {
+private def upload(String filePath, String apiKey, String channel) {
     if (rootProject.ext.pgy["enable"]) {
-        uploadPGY(filePath, "")
+        uploadPGY(filePath, apiKey, channel)
     } else if (rootProject.ext.fir["enable"]) {
-        uploadFIR(filePath)
+        uploadFIR(filePath, rootProject.ext.fir["apiKey"])
     } else {
         println "upload: " + filePath
     }
@@ -97,7 +98,7 @@ task uploadDevApk(dependsOn: 'releaseDevApk') {
     doLast {
         def apkFile = getApkFile(rootProject.ext.jiagu["devOutputPath"])
         if (apkFile != null) {
-            upload(apkFile.absolutePath)
+            upload(apkFile.absolutePath, rootProject.ext.pgy["devChannelKey"], rootProject.ext.pgy["devChannel"])
         }
     }
 }
@@ -112,7 +113,7 @@ task uploadProductionApk(dependsOn: 'releaseProductionApk') {
     doLast {
         def apkFile = getApkFile(rootProject.ext.jiagu["productionOutputPath"])
         if (apkFile != null) {
-            upload(apkFile.absolutePath)
+            upload(apkFile.absolutePath, rootProject.ext.pgy["proChannelKey"], rootProject.ext.pgy["proChannel"])
         }
     }
 }

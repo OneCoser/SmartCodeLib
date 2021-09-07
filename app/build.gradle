@@ -18,6 +18,8 @@ android {
 
         buildConfigField("String", "PGY_API_KEY", "\"${rootProject.ext.pgy["apiKey"]}\"")
         buildConfigField("String", "PGY_APP_KEY", "\"${rootProject.ext.pgy["appKey"]}\"")
+        buildConfigField("String", "PGY_API_DEV_KEY", "\"${rootProject.ext.pgy["devChannelKey"]}\"")
+        buildConfigField("String", "PGY_API_PRO_KEY", "\"${rootProject.ext.pgy["proChannelKey"]}\"")
 
         ndk {
             abiFilters "armeabi-v7a"
@@ -113,6 +115,8 @@ android {
         //测试环境
         dev {
             dimension "SERVER"
+            versionCode rootProject.ext.android["versionCodeDev"]
+            versionName rootProject.ext.android["versionNameDev"]
             buildConfigField("String", "API_URL", "\"http://139.224.19.165:8888/\"")
         }
 
@@ -141,7 +145,7 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation project(':SmartCode')
-    kapt 'com.alibaba:arouter-compiler:1.2.2'
+    kapt 'com.alibaba:arouter-compiler:1.5.2'
 }
 
 apply from: '../sc-task-jiagu.gradle'

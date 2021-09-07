@@ -2,6 +2,8 @@ package ch.smart.code.network
 
 import ch.smart.code.util.isNotNullOrBlank
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 
 /**
  * 项目名称：Consignor
@@ -38,12 +40,7 @@ interface IHttpHandler {
                 .message("获取缓存")
                 .request(request)
                 .protocol(Protocol.HTTP_1_0)
-                .body(
-                    ResponseBody.create(
-                        MediaType.parse("application/json; charset=UTF-8"),
-                        cacheStr
-                    )
-                )
+                .body(cacheStr.toResponseBody("application/json; charset=UTF-8".toMediaTypeOrNull()))
                 .build()
         } else null
     }
