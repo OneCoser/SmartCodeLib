@@ -1,8 +1,7 @@
 package ch.smart.code.network
 
 import android.net.ParseException
-import android.view.Gravity
-import com.blankj.utilcode.util.ToastUtils
+import ch.smart.code.util.showErrorToast
 import com.google.gson.JsonIOException
 import com.google.gson.JsonParseException
 import org.json.JSONException
@@ -42,8 +41,7 @@ class DefaultErrorHandle : ResponseErrorHandle {
             "请求失败"
         }
         if (showMsg && msg.isNotEmpty()) {
-            ToastUtils.setGravity(Gravity.CENTER, 0, 0)
-            ToastUtils.showShort(msg)
+            showErrorToast(msg)
         }
         Timber.e(throwable)
         return true
