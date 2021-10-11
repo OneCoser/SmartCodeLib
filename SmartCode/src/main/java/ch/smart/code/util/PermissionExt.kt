@@ -231,69 +231,6 @@ inline fun requestPermission(
     }
 }
 
-/**
- * 请求权限
- * @param context:Context
- * @param groups:请求的权限组，可多个
- * @param grantedAllAction:是否当全部请求权限都是被允许状态才回调granted
- * @param granted:权限允许回调
- * @param deniedAlert:权限被拒绝后是否弹框提示
- * @param denied:权限拒绝回调
- */
-inline fun requestPermission(
-    context: Context,
-    vararg groups: Array<String>,
-    grantedAllAction: Boolean,
-    crossinline granted: ((t: List<String>) -> Unit),
-    deniedAlert: Boolean,
-    crossinline denied: ((t: List<String>) -> Unit)
-) = requestPermission(
-    context,
-    *(arrayListOf<String>().apply { groups.forEach { this@apply.addAll(it) } }.toTypedArray()),
-    grantedAllAction = grantedAllAction,
-    granted = granted,
-    deniedAlert = deniedAlert,
-    denied = denied
-)
-
-/**
- * 请求权限
- * @param context:Context
- * @param groups:请求的权限组，可多个
- * @param grantedAllAction:是否当全部请求权限都是被允许状态才回调granted
- * @param granted:权限允许回调
- * @param deniedAlert:权限被拒绝后是否弹框提示
- */
-inline fun requestPermission(
-    context: Context,
-    vararg groups: Array<String>,
-    grantedAllAction: Boolean,
-    crossinline granted: ((t: List<String>) -> Unit),
-    deniedAlert: Boolean
-) = requestPermission(
-    context,
-    *(arrayListOf<String>().apply { groups.forEach { this@apply.addAll(it) } }.toTypedArray()),
-    grantedAllAction = grantedAllAction,
-    granted = granted,
-    deniedAlert = deniedAlert
-)
-
-/**
- * 请求权限
- * @param context:Context
- * @param groups:请求的权限组，可多个
- * @param deniedAlert:权限被拒绝后是否弹框提示
- */
-inline fun requestPermission(
-    context: Context,
-    vararg groups: Array<String>,
-    deniedAlert: Boolean
-) = requestPermission(
-    context,
-    *(arrayListOf<String>().apply { groups.forEach { this@apply.addAll(it) } }.toTypedArray()),
-    deniedAlert = deniedAlert
-)
-
 //启动&首页时需要请求的权限
 inline fun requestForStartup(context: Context, crossinline action: ((t: List<String>) -> Unit)) =
     requestPermission(
@@ -315,8 +252,9 @@ inline fun requestCameraAndStorage(
     crossinline granted: ((t: List<String>) -> Unit)
 ) = requestPermission(
     context,
-    Permission.Group.CAMERA,
-    Permission.Group.STORAGE,
+    Permission.CAMERA,
+    Permission.WRITE_EXTERNAL_STORAGE,
+    Permission.READ_EXTERNAL_STORAGE,
     grantedAllAction = true,
     granted = granted,
     deniedAlert = true
@@ -326,7 +264,8 @@ inline fun requestCameraAndStorage(
 inline fun requestStorage(context: Context, crossinline granted: ((t: List<String>) -> Unit)) =
     requestPermission(
         context,
-        Permission.Group.STORAGE,
+        Permission.WRITE_EXTERNAL_STORAGE,
+        Permission.READ_EXTERNAL_STORAGE,
         grantedAllAction = true,
         granted = granted,
         deniedAlert = true
