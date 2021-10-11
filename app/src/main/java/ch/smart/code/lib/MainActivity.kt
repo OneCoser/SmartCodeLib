@@ -71,6 +71,11 @@ class MainActivity : Activity(), StatusBarAdapter {
         testSelectVideo.click {
             openVideoSelect(this, selectListener)
         }
+        testPermission.click {
+            requestCameraAndStorage(this) {
+                showToast("获取成功!")
+            }
+        }
         requestForStartup(this) {
             Timber.i("初始化权限成功")
         }
