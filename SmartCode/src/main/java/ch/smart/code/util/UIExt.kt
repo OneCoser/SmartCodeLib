@@ -37,8 +37,7 @@ import java.util.concurrent.TimeUnit
 fun showToast(msg: String, @DrawableRes iconId: Int? = null) {
     try {
         if (msg.isNotEmpty()) {
-            ToastUtils.setGravity(Gravity.CENTER, 0, 0)
-            val v: View = ToastUtils.showCustomLong(R.layout.public_layout_toast)
+            val v: View = View.inflate(Utils.getApp(), R.layout.public_layout_toast, null)
             val vIcon: ImageView = v.findViewById(R.id.public_toast_icon)
             val vTxt: TextView = v.findViewById(R.id.public_toast_txt)
             if (iconId != null) {
@@ -48,6 +47,9 @@ fun showToast(msg: String, @DrawableRes iconId: Int? = null) {
                 vIcon.visibility = View.GONE
             }
             vTxt.text = msg
+            ToastUtils.getDefaultMaker()
+                .setGravity(Gravity.CENTER, 0, 0)
+                .show(v)
         }
     } catch (e: Exception) {
         Timber.e(e)

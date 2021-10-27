@@ -25,7 +25,8 @@ class VersionCheck(
     private val nowVersionCode: Int,
     private val nowVersionName: String,
     private val buildVersionNum: Int = 0,
-    private val needForceUpdate: Boolean = false
+    private val needForceUpdate: Boolean = false,
+    private val needForceDescRule: String = "强制更新"
 ) {
 
     interface Api {
@@ -92,11 +93,12 @@ class VersionCheck(
                                     if ((versionNo > nowVersionCode || buildVersionNum in 1 until versionBB)
                                         && url?.isStartsWithHttp() == true
                                     ) {
+                                        val desc =
+                                            data.get("buildUpdateDescription")?.asString ?: ""
                                         map["url"] = url
                                         map["name"] = data.get("buildVersion")?.asString ?: ""
-                                        map["desc"] =
-                                            data.get("buildUpdateDescription")?.asString ?: ""
-                                        if (needForceUpdate || versionNo - nowVersionCode > 1) {
+                                        map["desc"] = desc
+                                        if (needForceUpdate || desc.contains(needForceDescRule)) {
                                             map["force"] = "true"
                                         }
                                     }
