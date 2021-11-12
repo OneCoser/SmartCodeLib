@@ -21,13 +21,11 @@ import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.view.UIStatusView
 import com.tencent.smtt.sdk.TbsReaderView
 import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.public_activity_reader.*
 import timber.log.Timber
-import zlc.season.rxdownload3.RxDownload
-import zlc.season.rxdownload3.core.Downloading
-import zlc.season.rxdownload3.core.Failed
-import zlc.season.rxdownload3.core.Mission
-import zlc.season.rxdownload3.core.Succeed
+import zlc.season.rxdownload4.download
+import zlc.season.rxdownload4.task.Task
 import java.io.File
 
 /**
@@ -46,10 +44,11 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
             } else null
         }
 
-        fun open(holdTitle: String? = null, path: String?) {
+        fun open(path: String?, holdTitle: String? = null, holdUseReader: Boolean = false) {
             if (path.isNullOrEmpty()) return
             try {
                 ARouter.getInstance().build(PATH)
+                    .withBoolean("holdUseReader", holdUseReader)
                     .withString("holdTitle", holdTitle ?: "")
                     .withString("path", path)
                     .navigation()
@@ -59,6 +58,10 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
             }
         }
     }
+
+    @Autowired
+    @JvmField
+    var holdUseReader: Boolean = false
 
     @Autowired
     @JvmField
@@ -101,66 +104,42 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
             readerStatus.showError(msg = "文件地址错误!")
             return
         }
-        val ext = FileCache.getSuffix(path)
-        if (isHttp && (ext.isNullOrEmpty() || !TbsReaderView.isSupportExt(this, ext))) {
-            Timber.i("加载网页：%s", path)
-            addReaderViewToShow(WebView(this).apply {
-                this.webViewClient = object : WebViewClient() {
-                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                        view.loadUrl(url)
-                        return true
-                    }
-
-                    override fun onPageFinished(view: WebView, url: String) {
-                        super.onPageFinished(view, url)
-                        checkTitle(view.title)
-                    }
-                }
-                this.initSetting()
-                this.loadUrl(path.trim())
-            })
-            readerStatus.showDef()
-            return
-        }
         disDownload()
+        val ext = FileCache.getSuffix(path)
         val file = if (isFile) {
             File(path.replaceFirst(FILE_PREFIX, ""))
         } else {
             FileCache.getUrlFile(path, fixSuffix = ext)
         }
-        Timber.i("加载文件：%s \n %s", path, file?.absolutePath)
+        Timber.i("加载文件：\n%s\n%s", path, file?.absolutePath)
         if (isFile || file == null || file.exists()) {
             showTbsReader(file, ext)
             return
         }
-        download = RxDownload.create(
-            Mission(
-                path.trim(),
-                file.name,
-                file.parent,
-                overwrite = true,
-                enableNotification = false
-            ),
-            true
-        ).toIoAndMain().subscribe { status ->
-            when (status) {
-                is Succeed -> {
-                    showTbsReader(file, ext)
-                    disDownload()
-                }
-                is Failed -> {
-                    showTbsReader(null, null)
-                    disDownload()
-                }
-                is Downloading -> Timber.i("下载%s：%s", status.formatString(), path)
-                else -> Timber.i("下载状态%s", status)
+
+        download = Task(
+            path.trim(),
+            taskName = file.name,
+            saveName = file.name,
+            savePath = file.parent,
+        ).download().toIoAndMain().subscribeBy(
+            onNext = {
+                Timber.i("下载%s：%s", it.percent(), path)
+            },
+            onComplete = {
+                showTbsReader(file, ext)
+                disDownload()
+            },
+            onError = {
+                showTbsReader(null, null)
+                disDownload()
             }
-        }
+        )
     }
 
     private fun showTbsReader(file: File?, ext: String?) {
         if (file?.exists() != true) {
-            readerStatus.showError(msg = "加载失败!")
+            errorAction(ext, "加载失败!")
             return
         }
         try {
@@ -178,11 +157,36 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
                 checkTitle(file.name)
                 readerStatus.showDef()
             } else {
-                readerStatus.showError(msg = "暂不支持此文件格式!")
+                errorAction(ext, "暂不支持此文件格式!")
             }
         } catch (e: Exception) {
             Timber.e(e)
-            readerStatus.showError(msg = String.format("加载失败：%s", e.message))
+            errorAction(ext, String.format("加载失败：%s", e.message))
+        }
+    }
+
+    private fun errorAction(ext: String?, msg: String) {
+        if (!holdUseReader && path.isStartsWithHttp()) {
+            Timber.i("加载失败，尝试用WebView展示：%s", path)
+            addReaderViewToShow(WebView(this).apply {
+                this.webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                        view.loadUrl(url)
+                        return true
+                    }
+
+                    override fun onPageFinished(view: WebView, url: String) {
+                        super.onPageFinished(view, url)
+                        checkTitle(view.title)
+                    }
+                }
+                this.initSetting()
+                this.loadUrl(path.trim())
+            })
+            readerStatus.showDef()
+            return
+        } else {
+            readerStatus.showError(msg = msg)
         }
     }
 

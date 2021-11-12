@@ -7,15 +7,14 @@ import android.os.Build
 import androidx.core.content.FileProvider
 import ch.smart.code.R
 import ch.smart.code.util.FileCache
+import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.util.showErrorToast
 import com.blankj.utilcode.util.ActivityUtils
 import io.reactivex.disposables.Disposable
-import ch.smart.code.util.rx.toIoAndMain
+import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import zlc.season.rxdownload3.RxDownload
-import zlc.season.rxdownload3.core.Failed
-import zlc.season.rxdownload3.core.Mission
-import zlc.season.rxdownload3.core.Succeed
+import zlc.season.rxdownload4.download
+import zlc.season.rxdownload4.task.Task
 import java.io.File
 
 class VersionAlert(
@@ -55,14 +54,24 @@ class VersionAlert(
             return
         }
         Timber.i("开始下载%s：%s", name, url)
-        download = RxDownload.create(
-            Mission(url, file.name, file.parent, overwrite = true, enableNotification = false), true
-        ).toIoAndMain().subscribe { status ->
-            if (status is Succeed || status is Failed) {
+        download = Task(
+            url,
+            taskName = file.name,
+            saveName = file.name,
+            savePath = file.parent ?: ""
+        ).download().toIoAndMain().subscribeBy(
+            onNext = {
+                Timber.i("下载更新%s：%s", it.percent(), url)
+            },
+            onComplete = {
+                disDownload()
+                actionDownload(file)
+            },
+            onError = {
                 disDownload()
                 actionDownload(file)
             }
-        }
+        )
     }
 
     private fun disDownload() {

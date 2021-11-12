@@ -37,7 +37,7 @@ class MainActivity : Activity(), StatusBarAdapter {
                 .setListener(object : ItemAlert.ItemAlertClickListener {
                     override fun onClick(alert: ItemAlert, itemIndex: Int, itemTag: Any?) {
                         alert.cancel()
-                        BasicReaderActivity.open(path = itemTag?.toString())
+                        BasicReaderActivity.open(path = itemTag?.toString(), holdUseReader = false)
                     }
                 })
                 .addItem("网页", tag = "https://www.baidu.com")

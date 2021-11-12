@@ -31,14 +31,9 @@ import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.unit.Subunits
 import me.jessyan.autosize.utils.ScreenUtils
-import okhttp3.OkHttpClient
 import timber.log.Timber
-import zlc.season.rxdownload3.RxDownload
-import zlc.season.rxdownload3.core.DownloadConfig
-import zlc.season.rxdownload3.extension.ApkInstallExtension
-import zlc.season.rxdownload3.http.OkHttpClientFactory
 
-open class SmartCodeApp : Application(), IApp , CameraXConfig.Provider{
+open class SmartCodeApp : Application(), IApp, CameraXConfig.Provider {
 
     companion object {
         @JvmStatic
@@ -94,7 +89,6 @@ open class SmartCodeApp : Application(), IApp , CameraXConfig.Provider{
         initSMTT()
         initFresco()
         initAutoSize()
-        initRxDownload()
         initSmartRefresh()
         initPictureSelector()
     }
@@ -197,26 +191,6 @@ open class SmartCodeApp : Application(), IApp , CameraXConfig.Provider{
                 .setSpinnerStyle(SpinnerStyle.Translate)
                 .setPrimaryColor(Color.WHITE)
         }
-    }
-
-    private fun initRxDownload() {
-        // 初始化下载器
-        val downloadConfig = DownloadConfig.Builder.create(this)
-            .setDebug(SmartCodeApp.DEBUG)
-            .setMaxMission(3)
-            .enableAutoStart(false) // 自动开始下载
-            .enableNotification(false) // 启用Notification
-            .addExtension(ApkInstallExtension::class.java) // 添加自动安装扩展
-            .setOkHttpClientFacotry(object : OkHttpClientFactory {
-                override fun build(): OkHttpClient {
-                    return OkHttpFactory.commonHttpClient
-                }
-            })
-        FileCache.getDownloadDir()?.absolutePath?.let {
-            downloadConfig.setDefaultPath(it)
-        }
-        DownloadConfig.init(downloadConfig)
-        RxDownload.hashCode()
     }
 
     private fun initPictureSelector() {

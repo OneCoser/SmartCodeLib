@@ -10,11 +10,10 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
+import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import zlc.season.rxdownload3.RxDownload
-import zlc.season.rxdownload3.core.Failed
-import zlc.season.rxdownload3.core.Mission
-import zlc.season.rxdownload3.core.Succeed
+import zlc.season.rxdownload4.download
+import zlc.season.rxdownload4.task.Task
 import java.io.File
 
 class RingtonePlayer(private val repeat: Boolean = true) {
@@ -67,24 +66,25 @@ class RingtonePlayer(private val repeat: Boolean = true) {
 
     private fun startLoad(url: String, file: File) {
         stopLoad()
-        disposable = RxDownload.create(
-            Mission(
-                url,
-                file.name,
-                file.parent,
-                overwrite = true,
-                enableNotification = false
-            ), true
-        )
-            .toIoAndMain().subscribe { status ->
+        disposable = Task(
+            url,
+            taskName = file.name,
+            saveName = file.name,
+            savePath = file.parent ?: ""
+        ).download().toIoAndMain().subscribeBy(
+            onNext = {
+                Timber.i("下载%s：%s", it.percent(), url)
+            },
+            onComplete = {
+                startPlay(Uri.fromFile(file))
                 stopLoad()
-                if (status is Succeed) {
-                    startPlay(Uri.fromFile(file))
-                } else if (status is Failed) {
-                    actionError(status.throwable)
-                    isLoadingFile = false
-                }
+            },
+            onError = {
+                actionError(it)
+                isLoadingFile = false
+                stopLoad()
             }
+        )
     }
 
     private fun stopLoad() {

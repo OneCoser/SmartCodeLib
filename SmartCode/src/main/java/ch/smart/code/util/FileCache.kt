@@ -8,6 +8,7 @@ import com.blankj.utilcode.util.Utils
 import io.reactivex.Observable
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
+import com.tencent.mmkv.MMKV
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -27,9 +28,6 @@ object FileCache {
      * 获取SD卡上的公有目录，APP卸载不会删除文件，需要SD卡写权限
      * Environment.getExternalStoragePublicDirectory()
      */
-
-    // 缓存目录
-    private const val CACHE = "cache"
 
     // MMKV的缓存目录
     private const val MMKV = "mmkv"
@@ -56,7 +54,7 @@ object FileCache {
      * 获取 cache 缓存目录
      * @param uniqueName 需要获取的目录名
      */
-    private fun getRootDir(uniqueName: String? = null): File? {
+    fun getRootDir(uniqueName: String? = null): File? {
         try {
             val app = Utils.getApp()
             val file =
@@ -68,29 +66,14 @@ object FileCache {
             if (uniqueName.isNullOrBlank()) return file
             val uniqueFile = File(file, uniqueName)
             val existsDir = FileUtils.createOrExistsDir(uniqueFile)
-            if (!existsDir) {
-                Timber.e("创建文件夹失败 path：%s", uniqueName)
-                val file = File(Utils.getApp().cacheDir, uniqueName)
-                val mkdirs = FileUtils.createOrExistsDir(file)
-                return if (mkdirs) file else null
+            return if (!existsDir) {
+                Timber.e("创建%s文件夹失败", uniqueName)
+                val uFile = File(Utils.getApp().cacheDir, uniqueName)
+                val mkdirs = FileUtils.createOrExistsDir(uFile)
+                if (mkdirs) uFile else null
+            } else {
+                uniqueFile
             }
-            return uniqueFile
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
-        return null
-    }
-
-    fun getCacheDir(uniqueName: String? = null): File? {
-        try {
-            val file = getRootDir(CACHE)
-            if (uniqueName.isNullOrBlank()) return file
-            val uniqueFile = File(file, uniqueName)
-            val existsDir = FileUtils.createOrExistsDir(uniqueFile)
-            if (!existsDir) {
-                Timber.e("创建文件夹失败 path：%s", uniqueName)
-            }
-            return uniqueFile
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -98,27 +81,27 @@ object FileCache {
     }
 
     fun getTempDir(): File? {
-        return getCacheDir(TEMP)
+        return getRootDir(uniqueName = TEMP)
     }
 
     fun getLogDir(): File? {
-        return getCacheDir(LOG)
+        return getRootDir(uniqueName = LOG)
     }
 
     fun getDownloadDir(): File? {
-        return getCacheDir(DOWNLOAD)
+        return getRootDir(uniqueName = DOWNLOAD)
     }
 
     fun getImageDir(): File? {
-        return getCacheDir(IMAGE)
+        return getRootDir(uniqueName = IMAGE)
     }
 
     fun getMediaDir(): File? {
-        return getCacheDir(MEDIA)
+        return getRootDir(uniqueName = MEDIA)
     }
 
     fun getWebDir(): File? {
-        return getCacheDir(WEB)
+        return getRootDir(uniqueName = WEB)
     }
 
     fun getMMKVDir(): File? {
@@ -180,7 +163,7 @@ object FileCache {
 
     @JvmOverloads
     fun clear(uniqueName: String? = null, endAction: (() -> Unit)? = null) {
-        val file = getCacheDir(uniqueName = uniqueName)
+        val file = getRootDir(uniqueName = uniqueName)
         if (file == null || !file.exists()) {
             endAction?.invoke()
             return
