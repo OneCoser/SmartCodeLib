@@ -43,7 +43,7 @@ class MainActivity : Activity(), StatusBarAdapter {
                 .addItem("网页", tag = "https://www.baidu.com")
                 .addItem(
                     "文件",
-                    tag = "http://center.voniu.com/api/m/v1/file/get?path=reportpdf/6bbccd16-9ad9-4d5d-8fc5-b880fdd59120.pdf&token=164e6594-7492-45d9-902e-1873aa9f9d65"
+                    tag = "https://tanren.oss-cn-shenzhen.aliyuncs.com/patient/规章制度/行业规范1636601626326-88453-陈先达《马克思主义哲学原理》（第5版）笔记和课后习题（含考研真题）详解.pdf"
                 )
                 .addItem("错误地址", tag = "12344343")
                 .setCanceledOnTouchOutsideS(true).setCancelableS(true).show()

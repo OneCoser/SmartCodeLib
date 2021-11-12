@@ -24,6 +24,7 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.public_activity_reader.*
 import timber.log.Timber
 import zlc.season.rxdownload3.RxDownload
+import zlc.season.rxdownload3.core.Downloading
 import zlc.season.rxdownload3.core.Failed
 import zlc.season.rxdownload3.core.Mission
 import zlc.season.rxdownload3.core.Succeed
@@ -79,7 +80,10 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
     }
 
     override fun initData(p0: Bundle?) {
-        publicTopBar.setTitle(holdTitle)
+        if (holdTitle.isNotNullOrBlank()) {
+            title = holdTitle
+            publicTopBar.setTitle(holdTitle)
+        }
         readerStatus.click().subscribe(object : SimpleObserver<Unit>() {
             override fun onNext(t: Unit) {
                 loadReader()
@@ -99,7 +103,7 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
         }
         val ext = FileCache.getSuffix(path)
         if (isHttp && (ext.isNullOrEmpty() || !TbsReaderView.isSupportExt(this, ext))) {
-            Timber.i("加载网页：%s \n %s", path, ext)
+            Timber.i("加载网页：%s", path)
             addReaderViewToShow(WebView(this).apply {
                 this.webViewClient = object : WebViewClient() {
                     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
@@ -113,7 +117,7 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
                     }
                 }
                 this.initSetting()
-                this.loadUrl(path)
+                this.loadUrl(path.trim())
             })
             readerStatus.showDef()
             return
@@ -130,15 +134,26 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
             return
         }
         download = RxDownload.create(
-            Mission(path, file.name, file.parent, overwrite = true, enableNotification = false),
+            Mission(
+                path.trim(),
+                file.name,
+                file.parent,
+                overwrite = true,
+                enableNotification = false
+            ),
             true
         ).toIoAndMain().subscribe { status ->
-            if (status is Succeed) {
-                showTbsReader(file, ext)
-                disDownload()
-            } else if (status is Failed) {
-                showTbsReader(null, null)
-                disDownload()
+            when (status) {
+                is Succeed -> {
+                    showTbsReader(file, ext)
+                    disDownload()
+                }
+                is Failed -> {
+                    showTbsReader(null, null)
+                    disDownload()
+                }
+                is Downloading -> Timber.i("下载%s：%s", status.formatString(), path)
+                else -> Timber.i("下载状态%s", status)
             }
         }
     }

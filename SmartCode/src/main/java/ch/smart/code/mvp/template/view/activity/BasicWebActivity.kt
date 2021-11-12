@@ -55,7 +55,10 @@ open class BasicWebActivity : BaseActivity<IPresenter>() {
     }
 
     override fun initData(p0: Bundle?) {
-        publicTopBar.setTitle(holdTitle)
+        if (holdTitle.isNotNullOrBlank()) {
+            title = holdTitle
+            publicTopBar.setTitle(holdTitle)
+        }
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 view.loadUrl(url)
