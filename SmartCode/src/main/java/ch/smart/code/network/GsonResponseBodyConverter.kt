@@ -32,7 +32,12 @@ internal class GsonResponseBodyConverter<T>(
             if (error != null) {
                 throw error
             }
-            val data = json.optString(responseRule.getDataField())
+            val dataField = responseRule.getDataField()
+            val data = if (dataField.isBlank() || dataField.isEmpty()) {
+                responseStr
+            } else {
+                json.optString(dataField)
+            }
             val isNull = data.isNullOrBlank() || data.isNullOrEmpty() || data == "null"
             return when {
                 isArray && isNull -> adapter.read(gson.newJsonReader(StringReader("[]")))
