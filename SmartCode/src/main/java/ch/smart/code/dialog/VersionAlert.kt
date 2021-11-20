@@ -1,15 +1,11 @@
 package ch.smart.code.dialog
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import androidx.core.content.FileProvider
 import ch.smart.code.R
 import ch.smart.code.util.FileCache
 import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.util.showErrorToast
-import com.blankj.utilcode.util.ActivityUtils
+import com.blankj.utilcode.util.AppUtils
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
@@ -86,26 +82,27 @@ class VersionAlert(
             return
         }
         try {
-            val activity = ActivityUtils.getTopActivity()
-            activity.startActivity(
-                Intent(Intent.ACTION_VIEW).apply {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        setDataAndType(
-                            FileProvider.getUriForFile(
-                                activity,
-                                String.format("%s.fileProvider", activity.packageName),
-                                file
-                            ), "application/vnd.android.package-archive"
-                        )
-                    } else {
-                        setDataAndType(
-                            Uri.fromFile(file),
-                            "application/vnd.android.package-archive"
-                        )
-                    }
-                }
-            )
+//            val activity = ActivityUtils.getTopActivity()
+//            activity.startActivity(
+//                Intent(Intent.ACTION_VIEW).apply {
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                        setDataAndType(
+//                            FileProvider.getUriForFile(
+//                                activity,
+//                                String.format("%s.fileProvider", activity.packageName),
+//                                file
+//                            ), "application/vnd.android.package-archive"
+//                        )
+//                    } else {
+//                        setDataAndType(
+//                            Uri.fromFile(file),
+//                            "application/vnd.android.package-archive"
+//                        )
+//                    }
+//                }
+//            )
+            AppUtils.installApp(file)
             cancel()
         } catch (e: Exception) {
             Timber.e(e)
