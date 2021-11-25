@@ -33,11 +33,11 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
     companion object {
         const val PATH = "/SmartCode/activity/sc_images"
 
-        fun open(data: List<String>, index: Int = 0, needBig: Boolean = true) {
+        fun open(data: ArrayList<String>, index: Int = 0, needBig: Boolean = true) {
             if (data.isNullOrEmpty()) return
             try {
                 ARouter.getInstance().build(PATH)
-                    .withObject("data", data)
+                    .withStringArrayList("data", data)
                     .withInt("index", index)
                     .withBoolean("needBig", needBig)
                     .navigation()
@@ -50,7 +50,7 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
 
     @Autowired
     @JvmField
-    var data: List<String>? = null
+    var data: ArrayList<String>? = null
 
     @Autowired
     @JvmField
@@ -154,9 +154,17 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
                 progressView?.visibility = View.VISIBLE
             }
         })
-        val imageUrl = parseImageUrl(url)
-        Timber.i("LoadBigImage: %s", imageUrl)
-        view.showImage(Uri.parse(imageUrl))
+        container.addView(view)
+        Timber.i("LoadBigImage: %s", url)
+        view.showImage(
+            Uri.parse(
+                when {
+                    url.isNullOrBlank() -> ""
+                    url.startsWith("/") -> "file://$url"
+                    else -> url
+                }
+            )
+        )
         return view
     }
 }

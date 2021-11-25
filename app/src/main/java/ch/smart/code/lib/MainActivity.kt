@@ -7,6 +7,7 @@ import android.os.Bundle
 import ch.smart.code.adapter.StatusBarAdapter
 import ch.smart.code.mvp.template.view.activity.BasicReaderActivity
 import ch.smart.code.dialog.ItemAlert
+import ch.smart.code.mvp.template.view.activity.BasicImagesActivity
 import ch.smart.code.network.HttpObserver
 import ch.smart.code.util.*
 import ch.smart.code.util.rx.toIoAndMain
@@ -75,6 +76,13 @@ class MainActivity : Activity(), StatusBarAdapter {
             requestCameraAndStorage(this) {
                 showToast("获取成功!")
             }
+        }
+        testBigImage.click {
+            BasicImagesActivity.open(
+                arrayListOf(
+                    "https://tanren.oss-cn-shenzhen.aliyuncs.com/patient/贵阳供电局2021年电网建设10千伏及以下项目/贵阳供电局2021年电网建设10千伏及以下项目（开阳供电局）/开工报告/1637809538984-30743-开工令.jpg"
+                )
+            )
         }
         requestForStartup(this) {
             Timber.i("初始化权限成功")
