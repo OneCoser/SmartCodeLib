@@ -56,7 +56,7 @@ fun SimpleDraweeView.loadImage(
     }
 }
 
-fun parseImageUrl(url: String, width: Int = -1, height: Int = -1): String {
+fun parseImageUrl(url: String?, width: Int = -1, height: Int = -1): String {
     val uri = parseUri(url)
     return if (checkOtherScheme(uri)) {
         uri

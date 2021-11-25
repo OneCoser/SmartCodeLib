@@ -7,19 +7,20 @@ import ch.smart.code.R
 import ch.smart.code.imageloader.isStartsWithHttp
 import ch.smart.code.mvp.BaseActivity
 import ch.smart.code.mvp.IPresenter
+import ch.smart.code.mvp.lifecycle.bindObservableToDestroyL
+import ch.smart.code.network.HttpObserver
 import ch.smart.code.util.FileCache
 import ch.smart.code.util.initSetting
 import ch.smart.code.util.showErrorToast
 import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.alibaba.android.arouter.launcher.ARouter
-import com.tencent.smtt.sdk.WebView
-import com.tencent.smtt.sdk.WebViewClient
 import ch.smart.code.util.isNotNullOrBlank
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.view.UIStatusView
-import com.tencent.smtt.sdk.TbsReaderView
+import com.tencent.smtt.sdk.*
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.public_activity_reader.*
@@ -27,6 +28,7 @@ import timber.log.Timber
 import zlc.season.rxdownload4.download
 import zlc.season.rxdownload4.task.Task
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 /**
  * 类描述：阅读器
@@ -139,7 +141,7 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
 
     private fun showTbsReader(file: File?, ext: String?) {
         if (file?.exists() != true) {
-            errorAction(ext, "加载失败!")
+            errorAction(file, ext, "文件加载失败!")
             return
         }
         try {
@@ -157,16 +159,19 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
                 checkTitle(file.name)
                 readerStatus.showDef()
             } else {
-                errorAction(ext, "暂不支持此文件格式!")
+                errorAction(file, ext, "暂不支持此文件格式!")
             }
         } catch (e: Exception) {
             Timber.e(e)
-            errorAction(ext, String.format("加载失败：%s", e.message))
+            errorAction(file, ext, String.format("加载失败：%s", e.message))
         }
     }
 
-    private fun errorAction(ext: String?, msg: String) {
-        if (!holdUseReader && path.isStartsWithHttp()) {
+    private fun errorAction(file: File?, ext: String?, msg: String) {
+        if (file?.exists() == true) {
+            Timber.i("加载失败，但文件存在，使用QbSdk打开：%s", file.absolutePath)
+            openQbFileReader(file.absolutePath)
+        } else if (!holdUseReader && path.isStartsWithHttp()) {
             Timber.i("加载失败，尝试用WebView展示：%s", path)
             addReaderViewToShow(WebView(this).apply {
                 this.webViewClient = object : WebViewClient() {
@@ -184,10 +189,31 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
                 this.loadUrl(path.trim())
             })
             readerStatus.showDef()
-            return
         } else {
             readerStatus.showError(msg = msg)
         }
+    }
+
+    private fun openQbFileReader(filePath: String) {
+        Observable.just(filePath).delay(1, TimeUnit.SECONDS)
+            .bindObservableToDestroyL(this).toIoAndMain()
+            .subscribe(object : HttpObserver<String>() {
+                override fun onNext(t: String) {
+                    readerStatus.showDef()
+                    QbSdk.openFileReader(this@BasicReaderActivity, t, null, ValueCallback<String> {
+                        Timber.i("QbSdk.openFileReader：%s", it)
+                        readerStatus.showError(msg = it)
+                        if (it == "fileReaderClosed") {
+                            this@BasicReaderActivity.finish()
+                        }
+                    })
+                }
+
+                override fun onError(throwable: Throwable) {
+                    super.onError(throwable)
+                    readerStatus.showError(msg = throwable.toString())
+                }
+            })
     }
 
     private fun checkTitle(title: String?) {

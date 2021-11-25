@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ch.smart.code.view.SCProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/public_pt_50"
+    android:layout_height="@dimen/public_pt_50"
+    android:textColor="@color/public_color_FFFFFF"
+    android:textSize="@dimen/public_font_12pt"
+    app:sc_background_color="@color/public_color_6E6E6E"
+    app:sc_max_value="100"
+    app:sc_progress_color="@color/public_color_FFFFFF"
+    app:sc_stroke_width="@dimen/public_pt_3"
+    app:sc_type="type_circle"
+    app:sc_value="30" />

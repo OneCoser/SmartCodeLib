@@ -32,6 +32,8 @@ import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.unit.Subunits
 import me.jessyan.autosize.utils.ScreenUtils
 import timber.log.Timber
+import com.tencent.smtt.export.external.TbsCoreSettings
+
 
 open class SmartCodeApp : Application(), IApp, CameraXConfig.Provider {
 
@@ -168,6 +170,12 @@ open class SmartCodeApp : Application(), IApp, CameraXConfig.Provider {
     }
 
     private fun initSMTT() {
+        QbSdk.initTbsSettings(
+            mapOf(
+                TbsCoreSettings.TBS_SETTINGS_USE_SPEEDY_CLASSLOADER to true,
+                TbsCoreSettings.TBS_SETTINGS_USE_DEXLOADER_SERVICE to true
+            )
+        )
         QbSdk.initX5Environment(this, object : QbSdk.PreInitCallback {
             override fun onCoreInitFinished() {
                 Timber.i("初始化X5内核完成")

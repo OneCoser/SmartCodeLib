@@ -70,4 +70,19 @@
         </attr>
     </declare-styleable>
 
+    <declare-styleable name="SCProgressBar" tools:ignore="ResourceName">
+        <attr name="sc_type" format="enum">
+            <enum name="type_rect" value="0" />
+            <enum name="type_circle" value="1" />
+        </attr>
+        <attr name="sc_radius" format="dimension" />
+        <attr name="sc_progress_color" format="color" />
+        <attr name="sc_background_color" format="color" />
+        <attr name="sc_max_value" format="integer" />
+        <attr name="sc_value" format="integer" />
+        <attr name="sc_stroke_width" format="dimension" />
+        <attr name="sc_stroke_round_cap" format="boolean" />
+        <attr name="android:textSize" />
+        <attr name="android:textColor" />
+    </declare-styleable>
 </resources>

@@ -8,6 +8,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="SmartCode/src/main/res/layout/public_item_image.xml" value="0.19630192502532928" />
+        <entry key="SmartCode/src/main/res/layout/public_view_scprogress.xml" value="0.2608695652173913" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.9330543933054394" />
       </map>
     </option>

@@ -52,5 +52,10 @@
             android:name="ch.smart.code.mvp.template.view.activity.BasicImagesActivity"
             android:screenOrientation="portrait" />
 
+        <service
+            android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
+            android:label="dexopt"
+            android:process=":dexopt" />
+
     </application>
 </manifest>
