@@ -84,6 +84,14 @@ class MainActivity : Activity(), StatusBarAdapter {
                 )
             )
         }
+        testVersion.click {
+            VersionCheck(
+                apiKey = "b5d9694646f2be460fd0da6504ebb7cd",
+                appKey = "b3629ce862ad7dbfacfee203f5d311b5",
+                nowVersionCode = BuildConfig.VERSION_CODE,
+                nowVersionName = BuildConfig.VERSION_NAME
+            ).start(beQuiet = false)
+        }
         requestForStartup(this) {
             Timber.i("初始化权限成功")
         }
