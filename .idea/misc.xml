@@ -9,7 +9,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="SmartCode/src/main/res/layout/public_activity_images.xml" value="0.16590678824721378" />
+        <entry key="SmartCode/src/main/res/layout/public_activity_reader.xml" value="0.16590678824721378" />
         <entry key="SmartCode/src/main/res/layout/public_item_image.xml" value="0.19630192502532928" />
+        <entry key="SmartCode/src/main/res/layout/public_title.xml" value="0.2572463768115942" />
         <entry key="SmartCode/src/main/res/layout/public_view_scprogress.xml" value="0.2608695652173913" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.4897579143389199" />
       </map>

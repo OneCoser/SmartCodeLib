@@ -1,13 +1,20 @@
 package ch.smart.code.util
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.webkit.MimeTypeMap
 import ch.smart.code.R
+import com.blankj.utilcode.util.Utils
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.listener.OnResultCallbackListener
+import timber.log.Timber
+import java.io.File
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -130,4 +137,27 @@ fun openCamera(
         .isPreviewVideo(true)
         .isCompress(true)
         .forResult(listener)
+}
+
+//获取文件媒体类型
+fun String?.getMimeType(defaultType: String = "image/jpeg"): String {
+    return try {
+        val file = File(this ?: return defaultType)
+        val uri = Uri.fromFile(file)
+        val type = if (uri.scheme?.equals(ContentResolver.SCHEME_CONTENT) == true) {
+            Utils.getApp().contentResolver.getType(uri)
+        } else {
+            val ext = MimeTypeMap.getFileExtensionFromUrl(uri.toString())
+            MimeTypeMap.getSingleton()
+                .getMimeTypeFromExtension(ext.toLowerCase(Locale.getDefault()))
+        }
+        if (type.isNotNullOrBlank()) {
+            type
+        } else {
+            defaultType
+        }
+    } catch (e: Exception) {
+        Timber.e(e)
+        defaultType
+    }
 }

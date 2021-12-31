@@ -1,5 +1,6 @@
 package ch.smart.code.mvp.template.view.activity
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
@@ -9,56 +10,57 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 import ch.smart.code.R
+import ch.smart.code.bean.ShareBean
 import ch.smart.code.imageloader.*
 import ch.smart.code.mvp.BaseActivity
 import ch.smart.code.mvp.IPresenter
 import ch.smart.code.mvp.IView
-import ch.smart.code.util.drawable
-import ch.smart.code.util.pt
-import ch.smart.code.util.showErrorToast
+import ch.smart.code.util.*
+import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.view.SCProgressBar
-import com.alibaba.android.arouter.facade.annotation.Autowired
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.Utils
 import com.github.piasy.biv.indicator.ProgressIndicator
 import com.github.piasy.biv.view.BigImageView
 import com.github.piasy.biv.view.FrescoImageViewFactory
+import com.qmuiteam.qmui.widget.QMUITopBar
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.public_activity_images.*
 import timber.log.Timber
+import zlc.season.rxdownload4.download
+import zlc.season.rxdownload4.task.Task
 
-@Route(path = BasicImagesActivity.PATH)
-class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
+open class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
 
     companion object {
-        const val PATH = "/SmartCode/activity/sc_images"
-
-        fun open(data: ArrayList<String>, index: Int = 0, needBig: Boolean = true) {
+        fun open(
+            data: ArrayList<String>,
+            index: Int = 0,
+            needBig: Boolean = true,
+            shareParams: ShareBean? = null
+        ) {
             if (data.isNullOrEmpty()) return
             try {
-                ARouter.getInstance().build(PATH)
-                    .withStringArrayList("data", data)
-                    .withInt("index", index)
-                    .withBoolean("needBig", needBig)
-                    .navigation()
+                ActivityUtils.startActivity(
+                    Intent(ActivityUtils.getTopActivity(), BasicImagesActivity::class.java)
+                        .putStringArrayListExtra("data", data)
+                        .putExtra("index", index)
+                        .putExtra("needBig", needBig)
+                        .putExtra("shareParams", shareParams)
+                )
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
                 showErrorToast(e.message ?: "无法打开,请检测配置")
             }
         }
     }
 
-    @Autowired
-    @JvmField
-    var data: ArrayList<String>? = null
-
-    @Autowired
-    @JvmField
-    var index: Int = 0
-
-    @Autowired
-    @JvmField
-    var needBig: Boolean = true
+    open var data: ArrayList<String>? = null
+    open var index: Int = 0
+    open var needBig: Boolean = true
+    open var shareParams: ShareBean? = null
+    private var download: Disposable? = null
 
     override fun createPresenter(): IPresenter? {
         return null
@@ -68,7 +70,20 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
         return R.layout.public_activity_images
     }
 
+    open fun getTopBar(): QMUITopBar {
+        return publicTopBar
+    }
+
     override fun initData(savedInstanceState: Bundle?) {
+        data = intent?.getStringArrayListExtra("data")
+        index = intent?.getIntExtra("index", 0) ?: 0
+        needBig = intent?.getBooleanExtra("needBig", true) ?: true
+        shareParams = intent?.getParcelableExtra("shareParams")
+        checkNeedShare()
+        initPager()
+    }
+
+    open fun initPager() {
         imagePager.adapter = object : PagerAdapter() {
             override fun getCount(): Int {
                 return data?.size ?: 0
@@ -104,7 +119,69 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
         }
     }
 
-    private fun createSimpleImage(container: ViewGroup, url: String?): View {
+    open fun checkNeedShare() {
+        if (shareParams != null) {
+            getTopBar().removeAllRightViews()
+            getTopBar().addRightTextButton(shareParams?.btName ?: "分享", R.id.public_title_right)
+                .click {
+                    openShare(data?.getOrNull(imagePager.currentItem))
+                }
+        }
+    }
+
+    open fun openShare(path: String?) {
+        try {
+            disDownload()
+            if (path.isNullOrBlank()) {
+                showErrorToast("分享数据错误!")
+                return
+            }
+            if (path.isStartsWithHttp()) {
+                val file = FileCache.getUrlFile(url = path)
+                when {
+                    file?.exists() == true -> openShare(file.absolutePath)
+                    file != null -> {
+                        showLoading()
+                        download = Task(
+                            path.trim(),
+                            taskName = file.name,
+                            saveName = file.name,
+                            savePath = file.parent,
+                        ).download().toIoAndMain().subscribeBy(
+                            onNext = {
+                                Timber.i("下载%s：%s", it.percent(), path)
+                            },
+                            onComplete = {
+                                openShare(file.absolutePath)
+                            },
+                            onError = {
+                                disDownload()
+                                showErrorToast("下载分享数据失败!")
+                            }
+                        )
+                    }
+                    else -> showErrorToast("获取分享数据失败!")
+                }
+                return
+            }
+            Share(this, this).shareFiles(
+                mapOf(path to (shareParams?.holdName ?: "")),
+                arrayListOf(path.getMimeType()),
+                shareParams?.desc ?: "分享图片", ""
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+            showErrorToast("分享失败!")
+        }
+    }
+
+    open fun disDownload() {
+        download?.dispose()
+        download = null
+        dismissLoading()
+    }
+
+    open fun createSimpleImage(container: ViewGroup, url: String?): View {
         val view = View.inflate(
             container.context,
             R.layout.public_item_image,
@@ -121,7 +198,7 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
         return view
     }
 
-    private fun createBigImage(container: ViewGroup, url: String?): View {
+    open fun createBigImage(container: ViewGroup, url: String?): View {
         val view = BigImageView(container.context)
         view.setImageViewFactory(FrescoImageViewFactory())
         view.setFailureImage(R.drawable.public_error_img.drawable())
@@ -166,5 +243,10 @@ class BasicImagesActivity : BaseActivity<IPresenter>(), IView {
             )
         )
         return view
+    }
+
+    override fun onDestroy() {
+        disDownload()
+        super.onDestroy()
     }
 }

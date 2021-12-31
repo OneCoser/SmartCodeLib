@@ -5,9 +5,11 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Bundle
 import ch.smart.code.adapter.StatusBarAdapter
+import ch.smart.code.bean.ShareBean
 import ch.smart.code.mvp.template.view.activity.BasicReaderActivity
 import ch.smart.code.dialog.ItemAlert
 import ch.smart.code.mvp.template.view.activity.BasicImagesActivity
+import ch.smart.code.mvp.template.view.activity.BasicWebActivity
 import ch.smart.code.network.HttpObserver
 import ch.smart.code.util.*
 import ch.smart.code.util.rx.toIoAndMain
@@ -38,7 +40,18 @@ class MainActivity : Activity(), StatusBarAdapter {
                 .setListener(object : ItemAlert.ItemAlertClickListener {
                     override fun onClick(alert: ItemAlert, itemIndex: Int, itemTag: Any?) {
                         alert.cancel()
-                        BasicReaderActivity.open(path = itemTag?.toString(), holdUseReader = false)
+                        if (itemIndex == 0) {
+                            BasicWebActivity.open(
+                                url = itemTag?.toString(),
+                                shareParams = ShareBean()
+                            )
+                        } else {
+                            BasicReaderActivity.open(
+                                path = itemTag?.toString(),
+                                holdUseReader = false,
+                                shareParams = ShareBean(holdName = "测试文档")
+                            )
+                        }
                     }
                 })
                 .addItem("网页", tag = "https://www.baidu.com")
@@ -81,7 +94,8 @@ class MainActivity : Activity(), StatusBarAdapter {
             BasicImagesActivity.open(
                 arrayListOf(
                     "https://tanren.oss-cn-shenzhen.aliyuncs.com/patient/贵阳供电局2021年电网建设10千伏及以下项目/贵阳供电局2021年电网建设10千伏及以下项目（开阳供电局）/开工报告/1637809538984-30743-开工令.jpg"
-                )
+                ),
+                shareParams = ShareBean(holdName = "测试图片")
             )
         }
         testVersion.click {

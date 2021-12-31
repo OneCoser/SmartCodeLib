@@ -1,24 +1,22 @@
 package ch.smart.code.mvp.template.view.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import ch.smart.code.R
+import ch.smart.code.bean.ShareBean
 import ch.smart.code.imageloader.isStartsWithHttp
 import ch.smart.code.mvp.BaseActivity
 import ch.smart.code.mvp.IPresenter
 import ch.smart.code.mvp.lifecycle.bindObservableToDestroyL
 import ch.smart.code.network.HttpObserver
-import ch.smart.code.util.FileCache
-import ch.smart.code.util.initSetting
-import ch.smart.code.util.showErrorToast
-import com.alibaba.android.arouter.facade.annotation.Autowired
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
-import ch.smart.code.util.isNotNullOrBlank
+import ch.smart.code.util.*
 import ch.smart.code.util.rx.SimpleObserver
 import ch.smart.code.util.rx.toIoAndMain
 import ch.smart.code.view.UIStatusView
+import com.blankj.utilcode.util.ActivityUtils
+import com.qmuiteam.qmui.widget.QMUITopBar
 import com.tencent.smtt.sdk.*
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -33,45 +31,43 @@ import java.util.concurrent.TimeUnit
 /**
  * 类描述：阅读器
  */
-@Route(path = BasicReaderActivity.PATH)
 open class BasicReaderActivity : BaseActivity<IPresenter>() {
 
     companion object {
-        const val PATH = "/SmartCode/activity/sc_reader"
         const val FILE_PREFIX = "file://"
-
         fun getFilePath(file: File?): String? {
             return if (file?.exists() == true) {
                 FILE_PREFIX + file.absolutePath
             } else null
         }
 
-        fun open(path: String?, holdTitle: String? = null, holdUseReader: Boolean = false) {
+        fun open(
+            path: String?,
+            holdTitle: String? = null,
+            holdUseReader: Boolean = false,
+            shareParams: ShareBean? = null
+        ) {
             if (path.isNullOrEmpty()) return
             try {
-                ARouter.getInstance().build(PATH)
-                    .withBoolean("holdUseReader", holdUseReader)
-                    .withString("holdTitle", holdTitle ?: "")
-                    .withString("path", path)
-                    .navigation()
+                ActivityUtils.startActivity(
+                    Intent(ActivityUtils.getTopActivity(), BasicReaderActivity::class.java)
+                        .putExtra("holdUseReader", holdUseReader)
+                        .putExtra("holdTitle", holdTitle ?: "")
+                        .putExtra("path", path)
+                        .putExtra("shareParams", shareParams)
+                )
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
                 showErrorToast(e.message ?: "无法打开,请检测配置")
             }
         }
     }
 
-    @Autowired
-    @JvmField
-    var holdUseReader: Boolean = false
-
-    @Autowired
-    @JvmField
-    var holdTitle: String = ""
-
-    @Autowired
-    @JvmField
-    var path: String = ""
+    open var holdUseReader: Boolean = false
+    open var shareParams: ShareBean? = null
+    open var holdTitle: String = ""
+    open var path: String = ""
+    open var cacheFile: File? = null
 
     private var readerView: View? = null
     private var download: Disposable? = null
@@ -84,17 +80,60 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
         return R.layout.public_activity_reader
     }
 
+    open fun getTopBar(): QMUITopBar {
+        return publicTopBar
+    }
+
     override fun initData(p0: Bundle?) {
+        holdUseReader = intent?.getBooleanExtra("holdUseReader", false) ?: false
+        shareParams = intent?.getParcelableExtra("shareParams")
+        holdTitle = intent?.getStringExtra("holdTitle") ?: ""
+        path = intent?.getStringExtra("path") ?: ""
         if (holdTitle.isNotNullOrBlank()) {
             title = holdTitle
-            publicTopBar.setTitle(holdTitle)
+            getTopBar().setTitle(holdTitle)
         }
+        checkNeedShare()
         readerStatus.click().subscribe(object : SimpleObserver<Unit>() {
             override fun onNext(t: Unit) {
                 loadReader()
             }
         })
         loadReader()
+    }
+
+    open fun checkNeedShare() {
+        if (shareParams != null) {
+            getTopBar().removeAllRightViews()
+            getTopBar().addRightTextButton(shareParams?.btName ?: "分享", R.id.public_title_right)
+                .click {
+                    openShare(cacheFile, path)
+                }
+        }
+    }
+
+    open fun openShare(file: File?, safePath: String) {
+        try {
+            val share = Share(this, this)
+            val sharePath = if (file?.exists() == true) file.absolutePath else safePath
+            val desc = shareParams?.desc ?: "分享文档"
+            if (sharePath.isStartsWithHttp()) {
+                share.share("$desc：$sharePath", "")
+                return
+            }
+            if (sharePath.isNullOrBlank()) {
+                showErrorToast("分享数据错误!")
+                return
+            }
+            share.shareFiles(
+                mapOf(sharePath to (shareParams?.holdName ?: "")),
+                arrayListOf(sharePath.getMimeType(defaultType = "application/msword")),
+                desc, ""
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+            showErrorToast("分享失败!")
+        }
     }
 
     private fun loadReader() {
@@ -140,6 +179,7 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
     }
 
     private fun showTbsReader(file: File?, ext: String?) {
+        cacheFile = file
         if (file?.exists() != true) {
             errorAction(file, ext, "文件加载失败!")
             return

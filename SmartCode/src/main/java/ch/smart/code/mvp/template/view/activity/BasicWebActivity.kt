@@ -1,36 +1,40 @@
 package ch.smart.code.mvp.template.view.activity
 
+import android.content.Intent
 import android.os.Bundle
 import ch.smart.code.R
+import ch.smart.code.bean.ShareBean
 import ch.smart.code.imageloader.isStartsWithHttp
 import ch.smart.code.mvp.BaseActivity
 import ch.smart.code.mvp.IPresenter
-import ch.smart.code.util.initSetting
-import ch.smart.code.util.showErrorToast
-import com.alibaba.android.arouter.facade.annotation.Autowired
-import com.alibaba.android.arouter.facade.annotation.Route
-import com.alibaba.android.arouter.launcher.ARouter
+import ch.smart.code.util.*
 import com.tencent.smtt.sdk.WebView
 import com.tencent.smtt.sdk.WebViewClient
 import kotlinx.android.synthetic.main.public_activity_web.*
 import kotlinx.android.synthetic.main.public_title.*
-import ch.smart.code.util.isNotNullOrBlank
+import com.blankj.utilcode.util.ActivityUtils
+import com.qmuiteam.qmui.widget.QMUITopBar
+import timber.log.Timber
 
 /**
  * 类描述：网页浏览器
  */
-@Route(path = BasicWebActivity.PATH)
 open class BasicWebActivity : BaseActivity<IPresenter>() {
 
     companion object {
-        const val PATH = "/SmartCode/activity/sc_web"
-        fun open(holdTitle: String? = null, url: String) {
-            if (!url.isStartsWithHttp()) return
+        fun open(
+            url: String?,
+            holdTitle: String? = null,
+            shareParams: ShareBean? = null
+        ) {
+            if (url?.isStartsWithHttp() != true) return
             try {
-                ARouter.getInstance().build(PATH)
-                    .withString("holdTitle", holdTitle ?: "")
-                    .withString("baseUrl", url)
-                    .navigation()
+                ActivityUtils.startActivity(
+                    Intent(ActivityUtils.getTopActivity(), BasicWebActivity::class.java)
+                        .putExtra("baseUrl", url)
+                        .putExtra("holdTitle", holdTitle ?: "")
+                        .putExtra("shareParams", shareParams)
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 showErrorToast(e.message ?: "无法打开,请检测配置")
@@ -38,13 +42,10 @@ open class BasicWebActivity : BaseActivity<IPresenter>() {
         }
     }
 
-    @Autowired
-    @JvmField
-    var holdTitle: String = ""
-
-    @Autowired
-    @JvmField
-    var baseUrl: String = ""
+    open var baseUrl: String = ""
+    open var cacheUrl: String? = null
+    open var holdTitle: String = ""
+    open var shareParams: ShareBean? = null
 
     override fun createPresenter(): IPresenter? {
         return null
@@ -54,13 +55,50 @@ open class BasicWebActivity : BaseActivity<IPresenter>() {
         return R.layout.public_activity_web
     }
 
+    open fun getTopBar(): QMUITopBar {
+        return publicTopBar
+    }
+
     override fun initData(p0: Bundle?) {
+        shareParams = intent?.getParcelableExtra("shareParams")
+        holdTitle = intent?.getStringExtra("holdTitle") ?: ""
+        baseUrl = intent?.getStringExtra("baseUrl") ?: ""
         if (holdTitle.isNotNullOrBlank()) {
             title = holdTitle
-            publicTopBar.setTitle(holdTitle)
+            getTopBar().setTitle(holdTitle)
         }
+        checkNeedShare()
+        initWeb()
+    }
+
+    open fun checkNeedShare() {
+        if (shareParams != null) {
+            getTopBar().removeAllRightViews()
+            getTopBar().addRightTextButton(shareParams?.holdName ?: "分享", R.id.public_title_right)
+                .click {
+                    openShare(
+                        if (cacheUrl?.isStartsWithHttp() == true) {
+                            cacheUrl ?: baseUrl
+                        } else baseUrl
+                    )
+                }
+        }
+    }
+
+    open fun openShare(url: String) {
+        try {
+            Share(this, this)
+                .share("${shareParams?.desc ?: "分享网页"}：$url", "")
+        } catch (e: Exception) {
+            Timber.e(e)
+            showErrorToast("分享失败!")
+        }
+    }
+
+    open fun initWeb() {
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                cacheUrl = url
                 view.loadUrl(url)
                 return true
             }
@@ -68,7 +106,7 @@ open class BasicWebActivity : BaseActivity<IPresenter>() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
                 if (holdTitle.isBlank() && view.title.isNotNullOrBlank()) {
-                    publicTopBar.setTitle(view.title)
+                    getTopBar().setTitle(view.title)
                 }
             }
         }

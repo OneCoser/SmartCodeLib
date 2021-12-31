@@ -40,6 +40,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/sc_file_provider" />
         </provider>
+        <provider
+            android:name="ch.smart.code.util.ShareFileProvider"
+            android:authorities="${applicationId}.share_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/share_file_paths" />
+        </provider>
 
         <activity
             android:name="ch.smart.code.mvp.template.view.activity.BasicWebActivity"
