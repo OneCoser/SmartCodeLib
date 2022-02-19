@@ -74,9 +74,11 @@ class BasicInterceptor(
             if (cacheType == IHttpHandler.CACHE_TYPE_FIX && cacheResponse != null) {
                 cacheResponse
             } else {
+                var responseError: Exception? = null
                 val apiResponse = try {
                     chain.proceed(request)
                 } catch (e: Exception) {
+                    responseError = e
                     Timber.e(e)
                     null
                 }
@@ -86,7 +88,10 @@ class BasicInterceptor(
                         apiResponse
                     }
                     cacheType == IHttpHandler.CACHE_TYPE_ERROR && cacheResponse != null -> cacheResponse
-                    else -> throw Exception("网络请求失败!")
+                    else -> throw (responseError ?: ApiException(
+                        code = apiResponse?.code?.toString() ?: "500",
+                        msg = apiResponse?.message ?: "网络请求失败!"
+                    ))
                 }
             }
         val stopTime = System.nanoTime()

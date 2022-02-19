@@ -89,6 +89,10 @@ open class BasicReaderActivity : BaseActivity<IPresenter>() {
         shareParams = intent?.getParcelableExtra("shareParams")
         holdTitle = intent?.getStringExtra("holdTitle") ?: ""
         path = intent?.getStringExtra("path") ?: ""
+        initReader()
+    }
+
+    open fun initReader() {
         if (holdTitle.isNotNullOrBlank()) {
             title = holdTitle
             getTopBar().setTitle(holdTitle)
