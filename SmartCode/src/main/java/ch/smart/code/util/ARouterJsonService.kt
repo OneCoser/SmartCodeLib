@@ -10,7 +10,7 @@ import java.lang.reflect.Type
 class ARouterJsonService : SerializationService {
 
     companion object {
-        const val PATH = "smart.code.arouter.json"
+        const val PATH = "/SmartCode/JsonService"
     }
 
     override fun init(context: Context?) {
