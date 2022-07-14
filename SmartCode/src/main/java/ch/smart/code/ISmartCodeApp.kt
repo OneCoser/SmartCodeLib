@@ -125,11 +125,11 @@ interface ISmartCodeApp {
             )
             QbSdk.initX5Environment(application, object : QbSdk.PreInitCallback {
                 override fun onCoreInitFinished() {
-                    Timber.i("初始化X5内核完成")
+                    Timber.i("初始化X5内核：onCoreInitFinished")
                 }
 
-                override fun onViewInitFinished(p0: Boolean) {
-                    Timber.i("初始化X5内核是否成功:%s", p0)
+                override fun onViewInitFinished(isX5: Boolean) {
+                    Timber.i("初始化X5内核：onViewInitFinished-%s", isX5)
                 }
             })
         } catch (e: Exception) {
