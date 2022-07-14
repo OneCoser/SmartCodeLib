@@ -15,14 +15,15 @@ import ch.smart.code.util.*
 import ch.smart.code.util.rx.toIoAndMain
 import com.blankj.utilcode.util.ActivityUtils
 import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.listener.OnResultCallbackListener
+import com.luck.picture.lib.interfaces.OnResultCallbackListener
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+import java.util.ArrayList
 
 class MainActivity : Activity(), StatusBarAdapter {
     private val selectListener by lazy {
         object : OnResultCallbackListener<LocalMedia> {
-            override fun onResult(result: MutableList<LocalMedia>?) {
+            override fun onResult(result: ArrayList<LocalMedia>?) {
                 Timber.i("选择结果：%s", safeToJson(result))
             }
 
@@ -80,7 +81,7 @@ class MainActivity : Activity(), StatusBarAdapter {
             RingtonePlayer(repeat = false).start(type = RingtoneManager.TYPE_NOTIFICATION)
         }
         testSelectImage.click {
-            openImageSelect(this, selectListener)
+            openImageSelect(this, selectListener, style = createWhiteSelectorStyle())
         }
         testSelectVideo.click {
             openVideoSelect(this, selectListener)

@@ -7,6 +7,7 @@ import androidx.camera.core.CameraXConfig
 import androidx.multidex.MultiDex
 import ch.smart.code.mvp.app.AppDelegate
 import ch.smart.code.util.*
+import ch.smart.code.util.selector.PictureSelectorEngineImp
 import com.luck.picture.lib.app.IApp
 import com.luck.picture.lib.app.PictureAppMaster
 import com.luck.picture.lib.engine.PictureSelectorEngine

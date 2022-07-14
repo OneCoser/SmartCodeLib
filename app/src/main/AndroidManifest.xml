@@ -3,6 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ch.smart.code.lib">
 
+    <!--适配Android R包可见性 开始-->
+    <queries package="${applicationId}">
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE">
+
+            </action>
+        </intent>
+        <intent>
+            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE">
+
+            </action>
+        </intent>
+    </queries>
+    <!--适配Android R包可见性 结束-->
+
     <application
         android:name="ch.smart.code.lib.CustomApp"
         android:allowBackup="false"
@@ -18,7 +33,9 @@
         tools:replace="android:icon,android:theme,label,allowBackup,android:extractNativeLibs"
         tools:targetApi="n">
 
-        <activity android:name="ch.smart.code.lib.MainActivity">
+        <activity
+            android:name="ch.smart.code.lib.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
