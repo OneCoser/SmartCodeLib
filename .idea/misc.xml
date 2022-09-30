@@ -8,6 +8,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../.gradle/caches/transforms-2/files-2.1/678cba9b48163271fc446bab65c6c244/jetified-pictureselector-v3.10.5/res/drawable/ps_image_placeholder.xml" value="0.222" />
+        <entry key="../../../.gradle/caches/transforms-2/files-2.1/678cba9b48163271fc446bab65c6c244/jetified-pictureselector-v3.10.5/res/layout/ps_custom_preview_image.xml" value="0.37604166666666666" />
         <entry key="SmartCode/src/main/res/layout/public_activity_images.xml" value="0.16590678824721378" />
         <entry key="SmartCode/src/main/res/layout/public_activity_reader.xml" value="0.16590678824721378" />
         <entry key="SmartCode/src/main/res/layout/public_item_image.xml" value="0.19630192502532928" />
@@ -17,7 +19,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
