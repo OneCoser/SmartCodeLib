@@ -2,6 +2,7 @@ package ch.smart.code.mvp
 
 import android.content.res.Resources
 import android.os.Bundle
+import android.os.Looper
 import android.view.InflateException
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -67,8 +68,18 @@ abstract class BaseActivity<P : IPresenter>() : AppCompatActivity(), IActivity,
     }
 
     override fun getResources(): Resources {
-        AutoSizeCompat.autoConvertDensityOfGlobal(super.getResources())
+        autoConvertDensityOfGlobal()
         return super.getResources()
+    }
+
+    open fun autoConvertDensityOfGlobal() {
+        try {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                AutoSizeCompat.autoConvertDensityOfGlobal(super.getResources())
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     private fun traverse(root: ViewGroup) {
